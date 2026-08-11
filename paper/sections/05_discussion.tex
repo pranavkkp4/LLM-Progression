@@ -59,8 +59,11 @@ harness)~\cite{localaimaster2026gpt55,vals2026swebench}. (ii) The SWE-bench
 trend fit pools vendor and independent numbers and spans only 22 months; the
 $5.8\times$ figure should be read as an order of magnitude. (iii) The routing
 oracle uses benchmark identities as a proxy for task identity; real routers
-must infer task type from unlabeled traffic. (iv) The self-consistency
-experiment uses a 0.5B model on only 16 grade-school-math items by design;
-its intervals are correspondingly wide, and it demonstrates the measurement
-and logging mechanism cheaply rather than estimating a frontier effect size.
-(v) The field moves weekly; figures are current as of August 10, 2026.
+must infer task type from unlabeled traffic. (iv) The v1 intervention was
+selected on only 16 development items and evaluated once on 100 GSM8K items;
+it covers one model family, one task, and one evaluation seed. Its four-point
+primary gain is not statistically significant ($p=0.481$), and the Wilson
+intervals remain broad. (v) Seeded sampling is backend-sensitive: CPU and CUDA
+produced different sampled candidates, so exact replay requires the recorded
+software and device context. (vi) The field moves weekly; public benchmark
+figures are current as of August 10, 2026.

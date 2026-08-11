@@ -15,10 +15,15 @@ have a different leader, which makes routing --- not model selection --- the
 decision that matters. A practical way to improve a deployed system today is
 often to leave its weights fixed while measuring better ways to spend its
 inference compute.
+In our frozen GSM8K evaluation, four-sample plurality improved exact match
+from 58\% to 62\%, while the any-sample oracle reached 79\%; that gap makes
+selection, rather than candidate generation, the clearest next target. The
+observed four-point primary gain remains uncertain ($p=0.481$).
 
 \paragraph{Reproducibility.} All datasets (\texttt{code/data/}), analysis
-scripts (\texttt{exp1}--\texttt{exp4}), the live experiment, unit tests
-(\texttt{tests/}), figure generation, and this paper's build script are
+scripts (\texttt{exp1}--\texttt{exp4}), the locked v1 runner and manifests,
+complete live-experiment traces, unit tests (\texttt{tests/}), figure
+generation, and this paper's build script are
 included in the accompanying archive; see \texttt{README.md}. Nothing in this
 paper requires proprietary access to reproduce except the live benchmark
 numbers, whose sources and retrieval dates are documented in

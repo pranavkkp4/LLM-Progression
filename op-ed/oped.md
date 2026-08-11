@@ -79,19 +79,30 @@ four, and the software-engineering benchmark that defined 2025 is already
 ## The sleeper trick: think longer, vote more
 
 Buried in this summer's data is the most democratic finding of all. You do
-not always need a better model; sometimes you need to let the model you have
-*try more than once*. Ask a small, free, runs-on-a-laptop model a grade-school
-math question and answer on its first guess, and it gets a mediocre grade.
-In the accompanying paper's 16-question pilot, asking it eight times and
-taking the majority answer solved two questions rather than the greedy run's
-one. That sample is far too small to estimate the effect precisely, but the
-experiment makes the intervention and its uncertainty auditable. No
-retraining, no new hardware, no permission slip from a lab. Just compute,
-spent at the moment of answering instead of the moment of training.
+not always need a newly trained model; sometimes you need to format the task
+properly and let a modest model *try more than once*. Our first 16-question
+pilot was almost a dud: one correct answer from greedy decoding and two after
+eight-answer voting. We kept that result, treated those questions as
+development data, and rebuilt the test instead of polishing the headline.
 
-OpenAI knows this trick too: its flagship's "Ultra" mode quietly convenes a small committee of AI
-agents and lets them vote, and it beats the solo model on terminal work. The principle scales from a laptop to a data center:
-*how* you ask is becoming as important as *what* you ask.
+The v1 changes were ordinary but disciplined: use the model's official chat
+format, add four worked examples, lower sampling temperature, compare a
+1.5-billion-parameter model, and test both plurality voting and a verifier.
+Then freeze every setting before opening a separate 100-question set. On that
+untouched set, the first answer was right 58 times; four-answer voting was
+right 62 times. The verifier also scored 62. That is a real four-question gain
+in this run, but the paired statistical test says it could plausibly be noise
+($p=0.481$), so the paper calls it an observed improvement, not a law.
+
+The more tantalizing number is 79: on 79 questions, at least one of the four
+sampled answers was correct. Today's selectors recovered only 62. The model
+often generated the needed answer and then failed to recognize it. That
+17-point gap is a practical research target requiring no retraining.
+
+OpenAI uses the same broad idea at frontier scale: its flagship's "Ultra" mode
+convenes multiple agents and beats the solo model on terminal work. From a
+consumer GPU to a data center, *how* we spend inference compute is becoming as
+important as *which* weights we load.
 
 ## What to do with eight years of progress
 

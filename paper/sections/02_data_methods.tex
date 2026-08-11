@@ -24,8 +24,11 @@ representative API models from 2020 to 2026, using vendor documentation where
 available~\cite{deploybase2026prices,openai2026gpt56}.
 
 \paragraph{D4: Live-evaluation items.} The committed official GSM8K test split
-contains 1,319 question/answer pairs~\cite{cobbe2021gsm8k}; the live
-pilot uses a fixed 16-item sample and records the original row identifiers.
+contains 1,319 question/answer pairs~\cite{cobbe2021gsm8k}. We retain the
+original 16 pilot identifiers as a locked development split and sample 100
+evaluation identifiers once from the remaining rows
+(\texttt{random\_state=20260810}) before v1 tuning. The split manifest records
+both identifier lists and the source-parquet SHA-256 digest.
 
 \paragraph{Provenance caveat.} Mid-2026 numbers mix vendor-reported and
 independent evaluations. We label provenance wherever it matters and prefer
@@ -63,11 +66,18 @@ benchmark, and (iii) restricted routers (a cheapest-within-one-point router
 and a two-model router).
 
 \paragraph{Live experiment.} Section~\ref{sec:selfcons} describes a controlled
-inference-time pilot on Qwen2.5-0.5B-Instruct. We select 16 items from the
-official 1,319-item GSM8K test split with data seed 42 and compare deterministic
-greedy decoding with eight sampled chains (inference seed 1234, temperature
-0.8, top-$p$ 0.95, 192 generated tokens) followed by majority voting. Numeric
-answers are canonicalized before voting. We report exact counts, Wilson 95\%
-intervals for each accuracy, and a two-sided exact McNemar test for the paired
-greedy-versus-vote outcomes. Complete generations, extracted answers, seeds,
-settings, resumable checkpoints, and integrity tests are provided.
+development/evaluation protocol. On development data we screen three prompts
+(official chat-template concise, four-shot, and solve-and-check) at
+temperatures 0.4 and 0.7 using Qwen2.5-0.5B-Instruct, confirm the leading
+four-shot/0.4 setting on all 16 items, and compare it with
+Qwen2.5-1.5B-Instruct. The primary selector is four-sample plurality; a greedy
+candidate verifier is prespecified as secondary. Before evaluation, a manifest
+freezes Qwen2.5-1.5B-Instruct, the official chat template with four worked
+examples, $k=4$, temperature 0.4, top-$p=0.95$, seed 1234, and the plurality
+selector. We then run that configuration once on all 100 disjoint evaluation
+items. Every record stores the greedy completion, four sampled completions,
+canonical numeric answers, prefix votes, verifier decision, and correctness.
+We report exact counts, Wilson 95\% intervals, the any-sample oracle ceiling,
+and two-sided exact McNemar tests against paired greedy outcomes. Atomic
+checkpoints, JSONL traces, split/config hashes, and integrity tests are
+provided.

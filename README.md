@@ -20,10 +20,14 @@ code/
   exp2_cost.py              price decline + Pareto frontier of effort settings
   exp3_specialization.py    task-specialization heatmap, router oracle,
                             Luna-vs-GPT-5.5 head-to-head
-  exp4_self_consistency.py  LIVE experiment: greedy vs self-consistency on
-                            Qwen2.5-0.5B-Instruct / GSM8K
-  make_sc_outputs.py        figure + LaTeX table for exp4
-  run_all.py                runs exp1-3 (tests and exp4 are separate)
+  exp4_self_consistency.py  legacy 0.5B / 16-item pilot
+  prepare_v1_splits.py      creates the locked dev/evaluation manifest
+  exp4_v1_improved.py       chat prompts, sampling, verifier, full traces
+  freeze_v1_config.py       freezes a development-selected configuration
+  run_frozen_v1.py          runs/resumes the single 100-item evaluation
+  make_v1_outputs.py        validates results and builds paper table/figure
+  run_all.py                runs exp1-3 (tests and live runs are separate)
+  summarize_v1_runs.py      tabulates development screens and comparisons
 op-ed/oped.md     general-audience companion piece
 ```
 
@@ -37,7 +41,70 @@ python run_all.py          # runs exp1-3 and regenerates figures/results
 pytest tests/ -q           # unit and committed-artifact integrity tests
 ```
 
-## Reproducing the live experiment (exp4)
+## Reproducing the frozen v1 experiment
+
+The v1 workflow uses the original 16 GSM8K items only for development, locks
+100 disjoint evaluation IDs before tuning, and evaluates the frozen
+configuration once. The selected system is Qwen2.5-1.5B-Instruct with the
+official chat template, four worked examples, four samples at temperature 0.4
+and top-p 0.95, and plurality voting. A candidate verifier is reported as a
+prespecified secondary selector.
+
+The committed evaluation result is:
+
+- greedy: **58/100 (58.0%)**, Wilson 95% CI 48.2--67.2%;
+- vote at four, primary: **62/100 (62.0%)**, CI 52.2--70.9%;
+- verifier, secondary: **62/100 (62.0%)**, CI 52.2--70.9%;
+- any-sample oracle: **79/100 (79.0%)**, CI 70.0--85.8%;
+- paired exact McNemar test, primary versus greedy: **p=0.481**.
+
+The four-point observed gain is real for these saved predictions but is not
+statistically significant on 100 items. The 79% oracle ceiling shows that
+candidate selection, not candidate generation, is the largest measured
+remaining opportunity.
+
+1. Download model files for `Qwen/Qwen2.5-1.5B-Instruct` into
+   `models/Qwen2.5-1.5B-Instruct/`. Model weights are intentionally ignored by
+   Git (about 3.1 GB). The 0.5B files are also needed only to reproduce the
+   development comparison.
+
+   ```bash
+   hf download Qwen/Qwen2.5-1.5B-Instruct \
+     --local-dir models/Qwen2.5-1.5B-Instruct
+   hf download Qwen/Qwen2.5-0.5B-Instruct \
+     --local-dir models/Qwen2.5-0.5B-Instruct
+   ```
+
+2. Install runtime dependencies. CPU execution is supported; CUDA is selected
+   automatically when the installed PyTorch build exposes a compatible GPU.
+   The saved paper evaluation used PyTorch 2.10.0+cu128 on an RTX 3050 and
+   records `device: cuda`.
+
+   ```bash
+   pip install transformers torch pyarrow pandas scipy matplotlib pytest
+   ```
+
+3. Reproduce or resume the frozen evaluation and regenerate paper outputs.
+
+   ```bash
+   python code/run_frozen_v1.py
+   python code/make_v1_outputs.py
+   pytest code/tests -q
+   ```
+
+   `run_frozen_v1.py` validates every scientific setting against
+   `code/data/v1_frozen_config.json`. It requires all 100 locked items,
+   checkpoints after each record, and resumes without discarding completed
+   work. Use `--fresh` only when intentionally recomputing the full evaluation.
+
+The committed machine-readable artifacts are under `code/results/v1/`:
+development screens and confirmations, the frozen evaluation summary,
+100-record checkpoint, and JSONL trace. `make_v1_outputs.py` verifies the
+manifest hash, split sizes/order/disjointness, trace count, selector, and
+answer parseability before writing the paper table and figure.
+
+
+## Reproducing the legacy live experiment (exp4)
 
 exp4 runs a real 0.5B-parameter language model on GSM8K. No GPU is required.
 

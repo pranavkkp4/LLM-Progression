@@ -6,47 +6,81 @@ performance without training anything. We test each with code.
 \subsection{Suggestion 1: Spend test-time compute; sample and vote}\label{sec:selfcons}
 
 \paragraph{Claim.} For problems with verifiable answers, sampling several
-independent chain-of-thought solutions and majority-voting them
-(self-consistency~\cite{wang2022selfconsistency}) yields a materially more
-accurate system from the \emph{same} model.
+independent solutions and aggregating them can improve the effective system
+without changing its weights (self-consistency~\cite{wang2022selfconsistency}).
+Whether it helps is empirical: a selector can also discard a correct candidate.
 
-\paragraph{Experiment.} We evaluate Qwen2.5-0.5B-Instruct --- a half-billion
-parameter model that runs on a laptop CPU --- on a fixed seeded sample from
-the committed official GSM8K test set. The paper run fails rather than silently
-substituting synthetic data. Two conditions:
-greedy decoding, and self-consistency with $k$ samples at temperature 0.8,
-voted. We also report the vote at $k \in \{1, 2, 4\}$ to trace the
-compute--accuracy curve.
+\paragraph{Development protocol.} We treat the original 16-item
+Qwen2.5-0.5B-Instruct run as development evidence, not as a final estimate.
+Before tuning, we lock a disjoint 100-item evaluation set. On the first eight
+development items we screen three official-chat-template prompts (concise,
+four-shot, and solve-and-check) at temperatures 0.4 and 0.7. We confirm the
+leading four-shot/0.4 prompt on all 16 items, compare 0.5B and 1.5B models, and
+measure plurality prefixes plus a candidate verifier. The selected
+configuration is written to a frozen manifest before the evaluation run.
 
-\paragraph{Result.} \input{../code/results/self_consistency_sentence.tex}
-The complete trace contains one auditable record for each paired item,
-including the greedy generation, all eight sampled generations, extracted
-answers, and prefix votes. Because this is a small pilot, its Wilson intervals
-are wide and the paired test should be read as uncertainty rather than a
-binary success threshold; the run demonstrates a reproducible mechanism and
-logging method, not a precise population effect. The aggregation component is
-expected to grow with model scale and problem difficulty in the original
-study~\cite{wang2022selfconsistency}. All raw generations are released with the
-code (\url{results/exp4_raw_generations.jsonl}). This is the small-scale
-shadow of the frontier pattern, where multi-sample and multi-agent inference
-(Sol Ultra's 91.9\% vs.\ 88.8\% single-agent on
-Terminal-Bench~\cite{openai2026gpt56}) buys points that no single pass can.
+\paragraph{What changed.} The legacy raw-prompt 0.5B pilot produced 1/16
+greedy and 2/16 vote-at-eight. With the official instruction template,
+four worked examples, and temperature 0.4, the same 0.5B model produced 5/16
+greedy and 6/16 vote-at-four/verifier. Holding that configuration fixed, the
+1.5B model produced 8/16 for greedy, vote-at-four, and verifier on CPU.
+Thus prompt formatting supplied the largest development gain; model size
+improved greedy and the selected vote, while the verifier added no development
+accuracy. These are selection-set results and are not treated as unbiased
+performance estimates.
+
+\begin{table}[t]
+\centering
+\caption{Development path and frozen evaluation counts. The legacy vote uses
+$k=8$; all v1 vote rows use $k=4$. Development rows guided configuration
+selection and must not be read as holdout estimates.}\label{tab:v1dev}
+\small
+\resizebox{\linewidth}{!}{\input{../code/results/v1/v1_development_table.tex}}
+\end{table}
+
+\paragraph{Frozen evaluation.} The manifest fixes
+Qwen2.5-1.5B-Instruct, four-shot official chat formatting, $k=4$,
+temperature 0.4, top-$p=0.95$, seed 1234, and plurality as the primary
+selector. The verifier is a prespecified secondary selector. The CUDA run
+processes the 100 locked items once and stores all 100 paired traces.
+\input{../code/results/v1/v1_evaluation_sentence.tex}
+The primary observed gain is four percentage points (6.9\% relative), but its
+confidence interval overlaps the greedy interval and the paired test does not
+reject equality. We therefore call this an observed improvement, not a
+statistically established population effect.
+
+\paragraph{Where improvement remains.} All 400 sampled answers were parseable,
+and at least one of four samples was correct on 79/100 items. Plurality and the
+verifier each recovered 62/100, leaving a 17-point selector gap to that oracle
+ceiling. The verifier tied plurality on evaluation after underperforming it in
+the CUDA development verification (6/16 versus 10/16), so more elaborate
+selection is not automatically better. The concrete opportunity is to identify
+the correct minority candidate without overriding correct consensus.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.75\linewidth]{figures/calibration.png}
-\caption{Accuracy of Qwen2.5-0.5B-Instruct on GSM8K as a function
-of sampled chains $k$ (majority vote), versus the greedy baseline (dashed).
-Error bars and the gray band are Wilson 95\% intervals.
-Data and code: \url{code/exp4_self_consistency.py}.}\label{fig:selfcons}
+\includegraphics[width=0.92\linewidth]{figures/calibration.png}
+\caption{Locked 100-item GSM8K evaluation. Bars show exact-match accuracy;
+error bars are Wilson 95\% intervals. Vote-at-four was the frozen primary,
+the verifier was secondary, and the any-sample oracle is a diagnostic ceiling.
+The dashed line marks greedy accuracy.}\label{fig:selfcons}
 \end{figure}
 
 \begin{table}[t]
 \centering
-\caption{Self-consistency results (this paper's experiment).}\label{tab:selfcons}
+\caption{Frozen v1 evaluation results. Statistical inference is paired against
+greedy; the primary exact McNemar test gives $p=0.481$.}\label{tab:selfcons}
 \small
-\input{../code/results/self_consistency_table.tex}
+\resizebox{\linewidth}{!}{\input{../code/results/v1/v1_evaluation_table.tex}}
 \end{table}
+
+\paragraph{Reproducibility.} Sampling with the same seed produced different
+candidate draws on CPU and CUDA, although greedy correctness was identical
+(8/16) in the development check. We therefore record the execution device in
+the result JSON and report the CUDA artifact used for the 100-item estimate.
+This experiment is the small-scale analogue of frontier multi-sample and
+multi-agent inference, such as Sol Ultra's 91.9\% versus 88.8\% single-agent
+Terminal-Bench result~\cite{openai2026gpt56}.
 
 \subsection{Suggestion 2: Calibrate reasoning effort; more is not better}\label{sec:effort}
 

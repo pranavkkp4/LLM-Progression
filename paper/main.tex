@@ -75,12 +75,14 @@ frontend coding, Claude Fable~5 leads repository-level coding, GPT-5.6 Sol
 leads agentic terminal work, and Opus~5 quadrupled the record on the ARC-AGI-3
 novel-reasoning benchmark. An oracle that routes each task to the best of six
 public models recovers the full per-benchmark optimum, and we show a two-model
-router already captures all of that gain. Finally, as a proof of method, we run
-a fully traced 16-item pilot with a 0.5-billion-parameter open model on
-grade-school math. We compare greedy decoding with self-consistency sampling,
-report paired uncertainty, and demonstrate a reproducible way to measure
-test-time-compute interventions without retraining. All data, code, unit tests,
-and compilation scripts are provided.
+router already captures all of that gain. Finally, we run a fully traced v1
+experiment on grade-school math. Prompt, temperature, model size, and selector
+are chosen only on a locked 16-item development split; the selected
+Qwen2.5-1.5B configuration is then frozen and evaluated once on 100 disjoint
+items. Greedy decoding solves 58/100, while four-sample plurality and a
+prespecified verifier each solve 62/100 (paired exact McNemar $p=0.481$);
+the any-sample oracle reaches 79/100. All data, code, complete traces, unit
+tests, and compilation scripts are provided.
 \end{abstract}
 
 \vspace{0.5em}
