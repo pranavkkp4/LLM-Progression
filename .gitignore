@@ -16,6 +16,7 @@ paper/*.toc
 paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
+paper/main.pdf
 
 # Submission bundle requested for local delivery only.
 arxiv submit/
