@@ -5,6 +5,7 @@ __pycache__/
 # Large local model weights and Hugging Face download metadata.
 models/**/model*.safetensors
 models/**/.cache/
+models/Qwen2.5-1.5B-Instruct/
 
 # Local LaTeX build products (the released PDFs remain tracked).
 paper/*.aux
