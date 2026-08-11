@@ -1,13 +1,51 @@
 {
+  "schema_version": 2,
   "model": "Qwen/Qwen2.5-0.5B-Instruct",
   "dataset": "gsm8k",
   "n_problems": 16,
   "k": 8,
+  "seed": 1234,
+  "data_seed": 42,
+  "max_new_tokens": 192,
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "num_threads": 8,
+  "greedy_correct": 1,
   "greedy_accuracy": 6.25,
+  "greedy_wilson_95": [
+    1.1119057308331208,
+    28.32926836802987
+  ],
+  "self_consistency_correct": {
+    "1": 1,
+    "2": 1,
+    "4": 2,
+    "8": 2
+  },
   "self_consistency_accuracy": {
-    "1": 37.5,
-    "2": 37.5,
-    "4": 37.5,
-    "8": 37.5
-  }
+    "1": 6.25,
+    "2": 6.25,
+    "4": 12.5,
+    "8": 12.5
+  },
+  "self_consistency_wilson_95": {
+    "1": [
+      1.1119057308331208,
+      28.32926836802987
+    ],
+    "2": [
+      1.1119057308331208,
+      28.32926836802987
+    ],
+    "4": [
+      3.4976749337057136,
+      36.02333143674828
+    ],
+    "8": [
+      3.4976749337057136,
+      36.02333143674828
+    ]
+  },
+  "mcnemar_exact_p_at_k": 1.0,
+  "trace_records": 16
 }

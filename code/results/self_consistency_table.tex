@@ -1,11 +1,11 @@
-\begin{tabular}{@{}lr@{}}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-decoding strategy & accuracy (\%) \\
+decoding strategy & correct / $n$ & accuracy (\%) & 95\% Wilson interval \\
 \midrule
-greedy ($k=1$, no sampling) & 6.2 \\
-self-consistency, $k=1$ & 37.5 \\
-self-consistency, $k=2$ & 37.5 \\
-self-consistency, $k=4$ & 37.5 \\
-self-consistency, $k=8$ & 37.5 \\
+greedy ($k=1$, no sampling) & 1 / 16 & 6.2 & [1.1, 28.3] \\
+sample-and-vote, $k=1$ & 1 / 16 & 6.2 & [1.1, 28.3] \\
+sample-and-vote, $k=2$ & 1 / 16 & 6.2 & [1.1, 28.3] \\
+sample-and-vote, $k=4$ & 2 / 16 & 12.5 & [3.5, 36.0] \\
+sample-and-vote, $k=8$ & 2 / 16 & 12.5 & [3.5, 36.0] \\
 \bottomrule
 \end{tabular}
