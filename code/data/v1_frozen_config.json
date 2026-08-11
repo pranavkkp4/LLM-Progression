@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "run_name": "v1_final",
+  "split": "evaluation",
+  "split_file_sha256": "679343cde5381b8594f83c3d028084342af51c843b872725beee364562efa3c0",
+  "reported_selector": "majority",
+  "selection_source": "dev_fewshot_t04_qwen15_results.json",
+  "selection_policy": "Configuration chosen only from the locked 16-item development split. The 100 evaluation labels were not inspected before this manifest was written.",
+  "model_key": "qwen1.5b",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "prompt_style": "chat-fewshot",
+  "k": 4,
+  "temperature": 0.4,
+  "top_p": 0.95,
+  "max_new_tokens": 128,
+  "verifier_max_new_tokens": 96,
+  "seed": 1234
+}

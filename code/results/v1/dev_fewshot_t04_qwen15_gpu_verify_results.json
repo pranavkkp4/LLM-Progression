@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "run_name": "dev_fewshot_t04_qwen15_gpu_verify",
+  "split": "development",
+  "split_file_sha256": "679343cde5381b8594f83c3d028084342af51c843b872725beee364562efa3c0",
+  "model_key": "qwen1.5b",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "prompt_style": "chat-fewshot",
+  "k": 4,
+  "temperature": 0.4,
+  "top_p": 0.95,
+  "max_new_tokens": 128,
+  "verifier_max_new_tokens": 96,
+  "seed": 1234,
+  "device": "cuda",
+  "reported_selector": "majority",
+  "frozen_config_sha256": null,
+  "problem_ids": [
+    "gsm8k-test-677",
+    "gsm8k-test-1046",
+    "gsm8k-test-610",
+    "gsm8k-test-49",
+    "gsm8k-test-1284",
+    "gsm8k-test-486",
+    "gsm8k-test-548",
+    "gsm8k-test-939",
+    "gsm8k-test-78",
+    "gsm8k-test-506",
+    "gsm8k-test-210",
+    "gsm8k-test-184",
+    "gsm8k-test-485",
+    "gsm8k-test-451",
+    "gsm8k-test-1158",
+    "gsm8k-test-886"
+  ],
+  "num_threads": 8,
+  "n_problems": 16,
+  "trace_records": 16,
+  "greedy_correct": 8,
+  "greedy_accuracy": 50.0,
+  "greedy_wilson_95": [
+    27.99923761135083,
+    72.00076238864916
+  ],
+  "majority_correct": {
+    "1": 8,
+    "2": 8,
+    "4": 10
+  },
+  "majority_accuracy": {
+    "1": 50.0,
+    "2": 50.0,
+    "4": 62.5
+  },
+  "majority_wilson_95": {
+    "1": [
+      27.99923761135083,
+      72.00076238864916
+    ],
+    "2": [
+      27.99923761135083,
+      72.00076238864916
+    ],
+    "4": [
+      38.64064709793481,
+      81.5190174452472
+    ]
+  },
+  "verifier_correct": 6,
+  "verifier_accuracy": 37.5,
+  "verifier_wilson_95": [
+    18.480982554752806,
+    61.3593529020652
+  ],
+  "oracle_any_sample_correct": 10,
+  "oracle_any_sample_accuracy": 62.5,
+  "valid_sample_answers": 64,
+  "total_sample_answers": 64,
+  "mcnemar_exact_p_majority_vs_greedy": 0.625,
+  "mcnemar_exact_p_verifier_vs_greedy": 0.625,
+  "selected_correct": 10,
+  "selected_accuracy": 62.5,
+  "selected_wilson_95": [
+    38.64064709793481,
+    81.5190174452472
+  ],
+  "mcnemar_exact_p_selected_vs_greedy": 0.625
+}

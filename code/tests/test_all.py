@@ -1,5 +1,6 @@
 """Unit and committed-artifact integrity tests."""
 import json
+import hashlib
 import pathlib
 import sys
 
@@ -22,6 +23,12 @@ from exp4_self_consistency import (  # noqa: E402
     synthetic_problems,
     vote_sizes,
     wilson_interval,
+)
+from exp4_v1_improved import (  # noqa: E402
+    build_messages,
+    build_verifier_messages,
+    candidate_rows,
+    load_locked_split,
 )
 
 
@@ -107,6 +114,94 @@ def test_build_prompt_contains_question():
     assert q in build_prompt(q)
     assert "####" in build_prompt(q)
 
+
+def test_improved_v1_prompts_and_candidates():
+    question = "What is 2 + 2?"
+    for style in ("chat-concise", "chat-fewshot", "chat-check"):
+        messages = build_messages(question, style)
+        assert messages[0]["role"] == "system"
+        assert question in messages[1]["content"]
+        assert "####" in messages[0]["content"] or "####" in messages[1]["content"]
+    candidates = candidate_rows(
+        ["4", "4.0", "5", None], ["first", "duplicate", "other", "missing"]
+    )
+    assert candidates == [
+        {"answer": "4", "generation": "first"},
+        {"answer": "4.0", "generation": "duplicate"},
+        {"answer": "5", "generation": "other"},
+    ]
+    verifier = build_verifier_messages(question, candidates)
+    assert "Every candidate may be wrong" in verifier[1]["content"]
+
+
+def test_v1_splits_are_locked_and_disjoint():
+    development, _ = load_locked_split("development")
+    evaluation, _ = load_locked_split("evaluation")
+    assert len(development) == 16
+    assert len(evaluation) == 100
+    development_ids = {problem["id"] for problem in development}
+    evaluation_ids = {problem["id"] for problem in evaluation}
+    assert development_ids.isdisjoint(evaluation_ids)
+    original = json.loads(
+        (ROOT / "results" / "self_consistency_checkpoint.json").read_text(
+            encoding="utf-8")
+    )
+    assert [problem["id"] for problem in development] == original["problem_ids"]
+
+
+
+
+def test_v1_frozen_evaluation_artifacts_are_complete():
+    v1 = ROOT / "results" / "v1"
+    result = json.loads(
+        (v1 / "v1_final_results.json").read_text(encoding="utf-8")
+    )
+    checkpoint = json.loads(
+        (v1 / "v1_final_checkpoint.json").read_text(encoding="utf-8")
+    )
+    records = [
+        json.loads(line)
+        for line in (v1 / "v1_final_traces.jsonl").read_text(
+            encoding="utf-8"
+        ).splitlines()
+    ]
+    frozen_path = ROOT / "data" / "v1_frozen_config.json"
+    frozen = json.loads(frozen_path.read_text(encoding="utf-8"))
+    split_manifest = json.loads(
+        (ROOT / "data" / "gsm8k_v1_splits.json").read_text(encoding="utf-8")
+    )
+
+    assert result["frozen_config_sha256"] == hashlib.sha256(
+        frozen_path.read_bytes()
+    ).hexdigest()
+    assert result["split_file_sha256"] == frozen["split_file_sha256"]
+    assert result["split"] == frozen["split"] == "evaluation"
+    assert result["run_name"] == frozen["run_name"] == "v1_final"
+    assert result["model_key"] == frozen["model_key"] == "qwen1.5b"
+    assert result["prompt_style"] == frozen["prompt_style"] == "chat-fewshot"
+    assert result["reported_selector"] == frozen["reported_selector"] == "majority"
+    assert result["k"] == frozen["k"] == 4
+    assert result["temperature"] == frozen["temperature"] == 0.4
+    assert result["device"] == "cuda"
+    assert result["n_problems"] == result["trace_records"] == len(records) == 100
+    assert checkpoint["records"] == records
+    assert result["problem_ids"] == split_manifest["evaluation_ids"]
+    assert set(split_manifest["development_ids"]).isdisjoint(
+        split_manifest["evaluation_ids"]
+    )
+    assert all(len(record["sample_generations"]) == 4 for record in records)
+    assert all(len(record["extracted"]) == 4 for record in records)
+    assert all(answer is not None for record in records for answer in record["extracted"])
+
+    assert sum(record["greedy_correct"] for record in records) == 58
+    assert sum(record["votes"]["4"]["correct"] for record in records) == 62
+    assert sum(record["verifier"]["correct"] for record in records) == 62
+    assert sum(record["oracle_any_sample_correct"] for record in records) == 79
+    assert result["greedy_accuracy"] == 58.0
+    assert result["selected_accuracy"] == result["majority_accuracy"]["4"] == 62.0
+    assert result["verifier_accuracy"] == 62.0
+    assert result["oracle_any_sample_accuracy"] == 79.0
+    assert abs(result["mcnemar_exact_p_selected_vs_greedy"] - 0.480682373046875) < 1e-12
 
 # --------------------------------------------------------------- data files
 def test_data_files_parse():

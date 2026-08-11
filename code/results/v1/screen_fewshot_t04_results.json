@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_name": "screen_fewshot_t04",
+  "split": "development",
+  "split_file_sha256": "679343cde5381b8594f83c3d028084342af51c843b872725beee364562efa3c0",
+  "model_key": "qwen0.5b",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "prompt_style": "chat-fewshot",
+  "k": 4,
+  "temperature": 0.4,
+  "top_p": 0.95,
+  "max_new_tokens": 128,
+  "verifier_max_new_tokens": 96,
+  "seed": 1234,
+  "problem_ids": [
+    "gsm8k-test-677",
+    "gsm8k-test-1046",
+    "gsm8k-test-610",
+    "gsm8k-test-49",
+    "gsm8k-test-1284",
+    "gsm8k-test-486",
+    "gsm8k-test-548",
+    "gsm8k-test-939"
+  ],
+  "num_threads": 8,
+  "n_problems": 8,
+  "trace_records": 8,
+  "greedy_correct": 3,
+  "greedy_accuracy": 37.5,
+  "greedy_wilson_95": [
+    13.684175946152106,
+    69.42621454161981
+  ],
+  "majority_correct": {
+    "1": 4,
+    "2": 4,
+    "4": 4
+  },
+  "majority_accuracy": {
+    "1": 50.0,
+    "2": 50.0,
+    "4": 50.0
+  },
+  "majority_wilson_95": {
+    "1": [
+      21.521252682444185,
+      78.47874731755581
+    ],
+    "2": [
+      21.521252682444185,
+      78.47874731755581
+    ],
+    "4": [
+      21.521252682444185,
+      78.47874731755581
+    ]
+  },
+  "verifier_correct": 4,
+  "verifier_accuracy": 50.0,
+  "verifier_wilson_95": [
+    21.521252682444185,
+    78.47874731755581
+  ],
+  "oracle_any_sample_correct": 6,
+  "oracle_any_sample_accuracy": 75.0,
+  "valid_sample_answers": 32,
+  "total_sample_answers": 32,
+  "mcnemar_exact_p_majority_vs_greedy": 1.0,
+  "mcnemar_exact_p_verifier_vs_greedy": 1.0
+}
