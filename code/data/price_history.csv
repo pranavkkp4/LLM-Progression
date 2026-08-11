@@ -1,0 +1,15 @@
+model,date,input_price_per_1m,output_price_per_1m,note
+GPT-3 Davinci,2020-06-01,60.00,60.00,OpenAI API launch pricing (billed $0.06/1K)
+GPT-3.5 Turbo,2023-03-01,1.50,2.00,~40x cheaper than GPT-3 at higher quality
+GPT-4,2023-03-14,30.00,60.00,Frontier flagship launch price
+GPT-4 Turbo,2024-01-25,10.00,30.00,
+GPT-4o,2024-05-13,5.00,15.00,Native multimodal at half GPT-4 Turbo price
+GPT-4o (reduced),2024-08-06,2.50,10.00,Price cut
+GPT-5,2025-08-07,1.25,10.00,Frontier at prior budget-tier prices
+GPT-5.5,2026-04-23,5.00,30.00,Flagship tier
+GPT-5.6 Sol,2026-07-09,5.00,30.00,Flagship tier
+GPT-5.6 Terra,2026-07-30,2.00,12.00,Post-cut mid tier
+GPT-5.6 Luna,2026-07-30,0.20,1.20,Post-cut volume tier (80% cut on 2026-07-30)
+Claude Opus 5,2026-07-24,5.00,25.00,Unchanged from Opus 4.8
+Claude Fable 5,2026-07-01,10.00,50.00,Ultra-premium tier
+Kimi K3,2026-07-16,3.00,15.00,Open weights; $0.30/M cache-hit input

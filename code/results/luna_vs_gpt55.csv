@@ -1,0 +1,24 @@
+benchmark,luna,gpt55,winner
+Agents' Last Exam,50.3,46.9,Luna
+GDPval-AA v2,1591.8,1493.7,Luna
+Consulting (internal),35.4,31.3,Luna
+Big Finance Bench,36.0,49.0,GPT-5.5
+AA Intelligence Index,51.2,54.8,GPT-5.5
+AA Coding Agent Index,74.6,76.4,GPT-5.5
+SWE-bench Pro,62.7,59.4,Luna
+DeepSWE v1.1,67.2,67.0,Luna
+Terminal-Bench 2.1,84.7,85.6,GPT-5.5
+HealthBench Professional,55.7,51.8,Luna
+MMMU Pro (no tools),78.4,81.2,GPT-5.5
+MMMU Pro (tools),79.5,83.2,GPT-5.5
+gdp.pdf,22.7,26.0,GPT-5.5
+GPQA Diamond,92.3,93.6,GPT-5.5
+FrontierMath T1-3,78.6,85.3,GPT-5.5
+FrontierMath T4,58.5,72.5,GPT-5.5
+AutomationBench,14.9,12.9,Luna
+Toolathlon,53.4,55.6,GPT-5.5
+MRCR 256-512K,41.3,81.5,GPT-5.5
+MRCR 512K-1M,41.3,74.0,GPT-5.5
+GraphWalks 256k,81.3,73.7,Luna
+GraphWalks 1M,51.2,45.4,Luna
+ARC-AGI-3,0.18,0.43,GPT-5.5

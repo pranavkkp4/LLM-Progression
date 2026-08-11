@@ -1,0 +1,105 @@
+\section{Getting more from existing models: three suggestions, tested}\label{sec:improvements}
+
+The analyses above suggest three actionable ways to improve effective model
+performance without training anything. We test each with code.
+
+\subsection{Suggestion 1: Spend test-time compute; sample and vote}\label{sec:selfcons}
+
+\paragraph{Claim.} For problems with verifiable answers, sampling several
+independent chain-of-thought solutions and majority-voting them
+(self-consistency~\cite{wang2022selfconsistency}) yields a materially more
+accurate system from the \emph{same} model.
+
+\paragraph{Experiment.} We evaluate Qwen2.5-0.5B-Instruct --- a half-billion
+parameter model that runs on a laptop CPU --- on math word problems (GSM8K
+test items when downloadable; otherwise a deterministic synthetic set with
+programmatically verified answers; the script tries both). Two conditions:
+greedy decoding, and self-consistency with $k$ samples at temperature 0.8,
+voted. We also report the vote at $k \in \{1, 2, 4\}$ to trace the
+compute--accuracy curve.
+
+\paragraph{Result.} On 16 GSM8K problems with Qwen2.5-0.5B-Instruct, greedy
+decoding achieved 6.2\% accuracy, while sampling and voting reached 37.5\%
+--- an absolute gain of 31.2 percentage points from inference-time strategy
+alone (Table~\ref{tab:selfcons}, Figure~\ref{fig:selfcons}). Three features of
+the raw traces are as informative as the headline number. First, the gain
+appears already at $k=1$: the dominant effect is escaping \emph{greedy
+derailment}, where the model imitates the brevity of the few-shot prompt and
+commits to a wrong setup (e.g., computing the correct intermediate quantity
+and then reasoning past it to a wrong final answer); the vote curve
+$k \in \{2,4,8\}$ is flat on this small problem set, and the aggregation
+component grows with model scale and problem difficulty in the original
+study~\cite{wang2022selfconsistency}. Second, incorrect chains are nearly
+twice as long as correct ones (68 vs.\ 37 words on average): the model
+\emph{overthinks} --- the same failure mode behind the effort-calibration
+finding of Section~\ref{sec:effort}, observed here at 0.5B scale. Third, the
+correct answer appeared among the eight samples on 8 of the 11 fully-logged
+problems: the capability is latent in the weights, and the decoding strategy
+determines whether it surfaces. All raw generations are released with the
+code (\url{results/exp4_raw_generations.jsonl}). This is the small-scale
+shadow of the frontier pattern, where multi-sample and multi-agent inference
+(Sol Ultra's 91.9\% vs.\ 88.8\% single-agent on
+Terminal-Bench~\cite{vellum2026tiers}) buys points that no single pass can.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/fig_self_consistency.pdf}
+\caption{Accuracy of Qwen2.5-0.5B-Instruct on math word problems as a function
+of sampled chains $k$ (majority vote), versus the greedy baseline (dashed).
+Data and code: \url{code/exp4_self_consistency.py}.}\label{fig:selfcons}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Self-consistency results (this paper's experiment).}\label{tab:selfcons}
+\small
+\input{../code/results/self_consistency_table.tex}
+\end{table}
+
+\subsection{Suggestion 2: Calibrate reasoning effort; more is not better}\label{sec:effort}
+
+\paragraph{Claim.} Cranking reasoning effort to maximum is often worse
+\emph{and} more expensive.
+
+\paragraph{Evidence.} Two independent data points. First, Anthropic's own
+score-vs-cost curves show Opus~5's Frontier-Bench score peaks at
+\emph{xhigh} effort (44.4\%) and \emph{drops} at max (43.3\%) while costing
+more; community re-analysis of Anthropic's Frontier-code chart found the peak
+at medium effort (${\sim}53\%$)~\cite{valletta2026opus5,mindstudio2026opus5}.
+Second, our Pareto analysis (Figure~\ref{fig:frontier}) shows each
+${\sim}4$-point intelligence gain from Luna-max to Terra-max to Sol-max
+multiplies per-task cost by $2.6\times$ and $1.9\times$
+respectively~\cite{gist2026aa56}. The mechanism is overthinking: on tasks with
+a direct solution path, longer chains wander~\cite{mindstudio2026opus5}.
+\textbf{Recommendation:} treat effort as a per-workload hyperparameter with a
+measured optimum, not a quality dial to max out.
+
+\subsection{Suggestion 3: Route tasks to specialized models}\label{sec:routing}
+
+\paragraph{Claim.} Because the frontier is task-fragmented
+(Section~\ref{sec:specialization}), routing each workload to the right model
+beats committing to any single model.
+
+\paragraph{Evidence.} Our oracle analysis: best single model averages 97.6\% of
+per-benchmark best across the fourteen fully-covered benchmarks; an oracle
+scores 100; and a two-model router (Sol + Fable~5) already captures the entire
+gain. Production teams are converging on this pattern --- model-abstraction
+layers that swap models at the routing layer~\cite{explainx2026gpt56} ---
+and practitioners already pair a strong planner with a cheap executor (``Sol
+medium for architecting, Luna high for
+coding'')~\cite{hn2026gpt56}. \textbf{Recommendation:} a small router over two
+complementary frontier models, with a budget tier for well-defined subtasks,
+dominates any single-model deployment on quality; add the budget tier for
+cost.
+
+\subsection{What we would tell the labs}\label{sec:labs}
+The same analyses generate suggestions for model builders: (i) report
+score-vs-cost curves for every benchmark, as Anthropic now does --- single
+numbers invite cherry-picking~\cite{valletta2026opus5}; (ii) close the
+budget-tier long-context cliff (Luna's 41.3\% MRCR vs.\ Sol's
+91.5\%~\cite{vellum2026tiers}), the one place the cheap model is not
+near-flagship; (iii) publish held-out transfer evaluations alongside targeted
+benchmarks (the ARC-AGI-3/Witness gap in Section~\ref{sec:specialization});
+and (iv) invest in mid-context retrieval rather than context length alone ---
+K3's BrowseComp result suggests retrieval quality, not window size, is the
+binding constraint~\cite{venturebeat2026k3}.

@@ -1,0 +1,27 @@
+model,org,release_date,params_b,category,benchmark,score,score_pct,source
+BERT-Large,Google,2018-10-11,0.34,encoder,GLUE,80.5,80.5,Devlin et al. 2019 (arXiv:1810.04805)
+GPT-2,OpenAI,2019-02-14,1.5,decoder,WebText LAMBADA (acc),63.2,63.2,Radford et al. 2019
+RoBERTa,Facebook AI,2019-07-26,0.355,encoder,GLUE,88.5,88.5,Liu et al. 2019 (arXiv:1907.11692)
+T5-11B,Google,2019-10-23,11,enc-dec,SuperGLUE,90.3,90.3,Raffel et al. 2020 (arXiv:1910.10683)
+GPT-3,OpenAI,2020-05-28,175,decoder,SuperGLUE (few-shot),71.8,71.8,Brown et al. 2020 (NeurIPS)
+GPT-3,OpenAI,2020-05-28,175,decoder,MMLU (5-shot),43.9,43.9,Hendrycks et al. 2021
+InstructGPT,OpenAI,2022-01-27,175,decoder+RLHF,MMLU,52.0,52.0,Ouyang et al. 2022 (reported evals)
+GPT-4,OpenAI,2023-03-14,,decoder+RLHF,MMLU (5-shot),86.4,86.4,OpenAI GPT-4 Technical Report 2023
+GPT-4o,OpenAI,2024-05-13,,multimodal,MMLU,88.7,88.7,OpenAI GPT-4o system card / BenchLM mirror
+Claude 3.5 Sonnet,Anthropic,2024-06-20,,multimodal,MMLU,88.3,88.3,Anthropic model card 2024
+o1,OpenAI,2024-12-05,,reasoning,MMLU,91.8,91.8,BenchLM MMLU snapshot (retrieved 2026-08-07)
+GPT-4.1,OpenAI,2025-04-14,,multimodal,MMLU,90.2,90.2,BenchLM MMLU snapshot (retrieved 2026-08-07)
+Claude 3.5 Sonnet (Oct),Anthropic,2024-10-22,,agentic,SWE-bench Verified,49.0,49.0,Anthropic announcement 2024
+Claude 3.7 Sonnet,Anthropic,2025-02-24,,reasoning,SWE-bench Verified,62.3,62.3,Anthropic / METR record 2025
+Claude Opus 4,Anthropic,2025-05-22,,reasoning,SWE-bench Verified,72.5,72.5,Anthropic announcement 2025
+GPT-5,OpenAI,2025-08-07,,reasoning,SWE-bench Verified,74.9,74.9,OpenAI GPT-5 launch (vendor-reported)
+Claude Sonnet 4.5,Anthropic,2025-09-29,,reasoning,SWE-bench Verified,70.6,70.6,swebench.com leaderboard (mini-SWE-agent)
+Claude Opus 4.5,Anthropic,2025-11-24,,reasoning,SWE-bench Verified,76.8,76.8,swebench.com leaderboard (mini-SWE-agent; high)
+Gemini 3 Pro,Google,2025-11-18,,reasoning,SWE-bench Verified,74.2,74.2,swebench.com leaderboard (preview; high)
+GPT-5.2,OpenAI,2025-12-11,,reasoning,SWE-bench Verified,72.8,72.8,swebench.com leaderboard (high setting)
+Kimi K2.5,Moonshot AI,2026-01-27,,open-weight MoE,SWE-bench Verified,70.8,70.8,swebench.com leaderboard (high setting)
+GPT-5.5,OpenAI,2026-04-23,,reasoning,SWE-bench Verified,85.1,85.1,OpenAI GPT-5.5 release notes (vendor)
+Claude Fable 5,Anthropic,2026-07-01,,frontier,SWE-bench Verified,95.0,95.0,Vals AI independent harness (2026-07)
+GPT-5.6 Sol,OpenAI,2026-07-09,,frontier,SWE-bench Verified,96.2,96.2,Vals AI independent harness (2026-07)
+Kimi K3,Moonshot AI,2026-07-16,2800,open-weight MoE,SWE-bench Verified,93.4,93.4,Vals AI independent harness (2026-07)
+Claude Opus 5,Anthropic,2026-07-24,,frontier,SWE-bench Verified,97.0,97.0,Vals AI independent harness (2026-08)

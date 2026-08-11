@@ -1,0 +1,65 @@
+\section{Discussion: how models get good at specific tasks}\label{sec:discussion}
+
+The 2026 pattern --- one frontier, several winners --- is the predictable
+output of how frontier models are now built. We see at least four levers.
+
+\paragraph{1. Domain-weighted post-training.} Reinforcement learning on
+verifiable, domain-specific rewards (unit tests for code, proof checkers for
+math, task-completion signals for agents) lets a lab buy capability in a chosen
+vertical. Moonshot's agentic suite results and OpenAI's terminal/agentic lead
+both track heavy RL investment in those task
+families~\cite{tomshardware2026k3,openai2026gpt56}.
+
+\paragraph{2. Architecture as targeting.} Kimi~K3's hybrid linear attention
+(Kimi Delta Attention) and expert-routing changes were chosen for long-context
+agentic efficiency, and the payoff appeared precisely on long-horizon
+benchmarks (BrowseComp 91.2, state of the art at
+release)~\cite{venturebeat2026k3,tomshardware2026k3}.
+
+\paragraph{3. Inference-time structure.} GPT-5.6's Ultra mode makes
+multi-agent fan-out a first-class feature, buying Terminal-Bench points
+(88.8\%~$\to$~91.9\%) at ${\sim}3\times$ cost~\cite{vellum2026tiers,eesel2026gpt56}.
+Our self-consistency experiment (Section~\ref{sec:selfcons}) is the same lever
+at toy scale: capability is partly a function of inference-time orchestration.
+
+\paragraph{4. Benchmark-shaped optimization (and its limits).} When a benchmark
+becomes a target, labs optimize toward it, and two failure modes follow: the
+benchmark saturates (GLUE, MMLU, soon SWE-bench Verified), or gains fail to
+transfer off-distribution. The Witness evaluation of Opus~5 is the cleanest
+2026 example: a ${\sim}4\times$ record on ARC-AGI-3, but only a statistical tie
+with K3 and Fable~5 on held-out puzzles of the same genre, including one
+environment where Opus~5 stated the hidden rules before its first move ---
+suggesting familiarity, not just reasoning~\cite{decoder2026opus5,techtimes2026opus5}.
+METR's maintainer-review study adds a second caution from a different angle:
+a growing share of SWE-bench-passing patches would be rejected by human
+maintainers (quality, breakage, or missing the issue's point), and the
+grader--maintainer gap is widening over model
+generations~\cite{metr2026swebench}. Targeting works, and that is exactly why
+single-number claims deserve suspicion.
+
+\paragraph{Implication for evaluation.} Score-versus-cost curves, held-out
+transfer suites, and maintainer-grade review are becoming the minimum standard
+of evidence. Vendors already report curves~\cite{valletta2026opus5}; ARC Prize
+now administers runs independently with published
+traces~\cite{arcprize2026opus5, techtimes2026opus5}; and METR's maintainer
+study is a template for auditing what benchmark passes actually mean.
+
+\paragraph{Implication for buyers.} The economic shape of 2026 --- a budget
+tier at 4\% of flagship cost that matches last quarter's flagship on most
+professional work, plus a fragmented frontier --- means the unit of procurement
+is no longer ``a model'' but a routing policy with per-task effort settings.
+The 2023 question ``which model is best?'' has been replaced by ``which
+combination, at which effort, for which task?''
+
+\paragraph{Limitations.} This study has several. (i) Mid-2026 scores mix
+vendor and independent evaluations; we label provenance but cannot fully
+deconfound harness differences (e.g., GPT-5.5 scores 85.1\% vendor-reported
+vs.\ 82.6\% reconstructed from Vals AI's independent
+harness)~\cite{localaimaster2026gpt55,vals2026swebench}. (ii) The SWE-bench
+trend fit pools vendor and independent numbers and spans only 22 months; the
+$5.8\times$ figure should be read as an order of magnitude. (iii) The routing
+oracle uses benchmark identities as a proxy for task identity; real routers
+must infer task type from unlabeled traffic. (iv) The self-consistency
+experiment uses a 0.5B model on grade-school math by design --- it
+demonstrates the mechanism cheaply and reproducibly, not the frontier effect
+size. (v) The field moves weekly; figures are current as of August 2026.

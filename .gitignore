@@ -1,0 +1,21 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Large local model weights and Hugging Face download metadata.
+models/**/model*.safetensors
+models/**/.cache/
+
+# Local LaTeX build products (the released PDFs remain tracked).
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Submission bundle requested for local delivery only.
+arxiv submit/

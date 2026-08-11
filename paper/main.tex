@@ -1,0 +1,104 @@
+% !TeX program = tectonic
+% arXiv-style preprint. Compile: tectonic main.tex (2 runs for cross-refs)
+\documentclass[11pt]{article}
+
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{tcolorbox}
+
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm}
+
+\usepackage[numbers,super,sort&compress]{natbib}
+\bibliographystyle{unsrtnat}
+
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=darkgray,
+    urlcolor=blue,
+    bookmarks=true,
+    bookmarksnumbered=true,
+    unicode=true
+]{hyperref}
+\hypersetup{
+    pdftitle={From BERT to Frontier Agents: Eight Years of Language-Model Progress},
+    pdfauthor={},
+    pdfsubject={cs.CL, cs.AI, cs.LG},
+    pdfkeywords={large language models, benchmarks, scaling, cost efficiency, task specialization, self-consistency, model routing}
+}
+
+\captionsetup{font=small, labelfont=bf}
+\emergencystretch=3em
+\setlist[itemize]{itemsep=0.2em, leftmargin=1.4em}
+\setlist[enumerate]{itemsep=0.2em, leftmargin=1.6em}
+
+\title{\textbf{From BERT to Frontier Agents: Eight Years of Language-Model\\Progress, the Collapse of the Capability--Cost Curve,\\and the Rise of Task-Targeted Models}\\[0.6em]
+\large An empirical review with reproducible measurements, 2018--2026}
+
+\author{}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Between October 2018 and July 2026, language models moved from BERT, a
+340-million-parameter encoder that could barely generate text, to
+trillion-parameter agentic systems that solve International Mathematical
+Olympiad problems, repair real software repositories, and operate desktop
+computers. This paper reviews that progression, quantifies it, and tests three
+practical claims with code. First, using public benchmark series (GLUE,
+SuperGLUE, MMLU, SWE-bench Verified), we estimate that agentic-coding
+capability, measured as the odds of solving a real GitHub issue, has grown by a
+factor of ${\sim}5.8\times$ per year since October 2024. Second, we document the
+collapse of the capability--cost curve: GPT-5.6 Luna, OpenAI's budget tier at
+\$0.20/\$1.20 per million input/output tokens, matches or beats GPT-5.5 ---
+the flagship of eleven weeks earlier --- on most agentic and professional-work
+benchmarks in the vendor's own tables, and exceeds the August 2025 flagship
+GPT-5's SWE-bench Verified score by ${\sim}18$ points on an independent
+harness's reconstruction. Third, we show that
+the frontier has fragmented by task: Kimi~K3 leads human-preference frontend
+coding, Claude Fable~5 leads repository-level coding, GPT-5.6 Sol leads agentic
+terminal work, and Claude Opus~5 quadrupled the record on the ARC-AGI-3
+novel-reasoning benchmark. An oracle that routes each task to the best of six
+public models recovers the full per-benchmark optimum, and we show a two-model
+router already captures all of that gain. Finally, as a proof of method, we run
+a live experiment: self-consistency sampling lifts a 0.5-billion-parameter open
+model's accuracy on grade-school math problems substantially over greedy
+decoding, demonstrating that test-time compute remains an underused lever for
+improving models without retraining. All data, code, unit tests, and
+compilation scripts are provided.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} large language models; evaluation; scaling;
+inference economics; task specialization; self-consistency; model routing
+
+\tableofcontents
+\newpage
+
+\input{sections/01_intro_history}
+\input{sections/02_data_methods}
+\input{sections/03_results}
+\input{sections/04_improvements}
+\input{sections/05_discussion}
+\input{sections/06_conclusion}
+
+\begingroup
+\emergencystretch=2em
+\bibliography{references}
+\endgroup
+
+\end{document}

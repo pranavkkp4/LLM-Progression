@@ -1,0 +1,12 @@
+best_single=97.64
+best_single_name=GPT-5.6 Sol
+oracle=100.00
+single:GPT-5.6 Sol=97.64
+single:Claude Fable 5=95.27
+single:GPT-5.6 Terra=89.72
+single:GPT-5.5=87.11
+single:GPT-5.6 Luna=86.29
+single:Claude Opus 4.8=85.50
+cheap_router_score=99.95
+cheap_router_cost_share=96.1
+two_model_router=100.00

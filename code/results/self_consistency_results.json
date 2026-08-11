@@ -1,0 +1,13 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "dataset": "gsm8k",
+  "n_problems": 16,
+  "k": 8,
+  "greedy_accuracy": 6.25,
+  "self_consistency_accuracy": {
+    "1": 37.5,
+    "2": 37.5,
+    "4": 37.5,
+    "8": 37.5
+  }
+}

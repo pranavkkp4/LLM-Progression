@@ -1,0 +1,16 @@
+model,effort,index,cost
+Luna,low,33,0.04
+Luna,medium,38,0.05
+Luna,high,46,0.09
+Luna,xhigh,49,0.14
+Luna,max,51,0.21
+Terra,low,40,0.1
+Terra,medium,46,0.13
+Terra,high,49,0.24
+Terra,xhigh,52,0.33
+Terra,max,55,0.55
+Sol,low,49,0.2
+Sol,medium,54,0.31
+Sol,high,56,0.45
+Sol,xhigh,58,0.68
+Sol,max,59,1.04
