@@ -2,6 +2,7 @@
 import json
 import hashlib
 import pathlib
+import re
 import sys
 
 import numpy as np
@@ -29,6 +30,11 @@ from exp4_v1_improved import (  # noqa: E402
     build_verifier_messages,
     candidate_rows,
     load_locked_split,
+)
+from exp5_confidence_model import (  # noqa: E402
+    FEATURE_NAMES,
+    record_features,
+    run_analysis,
 )
 
 
@@ -202,6 +208,87 @@ def test_v1_frozen_evaluation_artifacts_are_complete():
     assert result["verifier_accuracy"] == 62.0
     assert result["oracle_any_sample_accuracy"] == 79.0
     assert abs(result["mcnemar_exact_p_selected_vs_greedy"] - 0.480682373046875) < 1e-12
+
+
+def test_confidence_features_do_not_use_reference_answers():
+    trace_path = ROOT / "results" / "v1" / "v1_final_traces.jsonl"
+    record = json.loads(trace_path.read_text(encoding="utf-8").splitlines()[0])
+    altered = json.loads(json.dumps(record))
+    altered["gold"] = "not-the-reference"
+    altered["greedy_correct"] = not altered["greedy_correct"]
+    altered["votes"]["4"]["correct"] = not altered["votes"]["4"]["correct"]
+    altered["verifier"]["correct"] = not altered["verifier"]["correct"]
+    altered["oracle_any_sample_correct"] = not altered["oracle_any_sample_correct"]
+    assert record_features(record) == record_features(altered)
+
+
+def test_ml_confidence_artifact_is_reproducible():
+    v1 = ROOT / "results" / "v1"
+    trace_path = v1 / "v1_final_traces.jsonl"
+    records = [
+        json.loads(line)
+        for line in trace_path.read_text(encoding="utf-8").splitlines()
+    ]
+    committed = json.loads(
+        (v1 / "ml_confidence_results.json").read_text(encoding="utf-8")
+    )
+    recomputed = run_analysis(
+        records, hashlib.sha256(trace_path.read_bytes()).hexdigest()
+    )
+
+    assert committed["analysis_role"] == (
+        "post-evaluation exploratory confidence analysis"
+    )
+    assert committed["features"] == FEATURE_NAMES
+    assert committed["input_trace_sha256"] == recomputed["input_trace_sha256"]
+    assert committed["n_items"] == 100
+    assert committed["positive_items"] == 62
+    assert {item["fold"] for item in committed["items"]} == {1, 2, 3, 4, 5}
+    assert [item["id"] for item in committed["items"]] == [
+        record["id"] for record in records
+    ]
+    assert np.allclose(
+        [item["oof_probability"] for item in committed["items"]],
+        [item["oof_probability"] for item in recomputed["items"]],
+        rtol=0,
+        atol=1e-12,
+    )
+    for metric, value in committed["metrics"].items():
+        assert abs(value - recomputed["metrics"][metric]) < 1e-12
+    assert committed["metrics"]["roc_auc"] > 0.8
+    assert committed["metrics"]["brier_score"] < (
+        committed["constant_prevalence_baseline"]["brier_score"]
+    )
+    top_half = committed["selective_accuracy"][0]
+    assert top_half["coverage"] == 0.5
+    assert top_half["n_selected"] == 50
+    assert top_half["correct"] == 47
+    assert top_half["accuracy"] == 94.0
+
+
+def test_paper_main_is_arxiv_self_contained():
+    paper = ROOT.parent / "paper"
+    source = (paper / "main.tex").read_text(encoding="utf-8")
+
+    assert r"\input{" not in source
+    assert "sections/" not in source
+    assert "../code/" not in source
+    assert r"\bibliography{references}" in source
+    assert (paper / "main.bbl").is_file()
+    assert (paper / "references.bib").is_file()
+
+    figure_paths = re.findall(
+        r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", source
+    )
+    assert set(figure_paths) == {
+        "figures/architecture.pdf",
+        "figures/results.png",
+        "figures/calibration.png",
+        "figures/robustness.pdf",
+    }
+    assert all((paper / path).is_file() for path in figure_paths)
+    assert "Confidence-ranked set" in source
+
 
 # --------------------------------------------------------------- data files
 def test_data_files_parse():

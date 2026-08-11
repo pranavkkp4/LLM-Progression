@@ -1,8 +1,8 @@
 \section{Data and methods}\label{sec:methods}
 
 \subsection{Data}
-We assembled three analysis tables plus one evaluation split, all shipped with
-this paper's code.
+The repository contains three analysis tables, a locked evaluation split, and
+the complete traces needed to reproduce every reported result.
 
 \paragraph{D1: Timeline.} Twenty-seven (model, benchmark, score, date, source)
 rows spanning 2018--2026, drawn from the original papers and from leaderboard
@@ -39,10 +39,10 @@ as such and note where vendor and third-party harnesses differ.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/architecture.pdf}
-\caption{Reproducibility architecture. Public evidence and versioned inputs
-feed deterministic analyses; the live experiment separately records complete
-per-problem generations and paired statistics before either path reaches the
-paper.}\label{fig:architecture}
+\caption{Reproducibility architecture. Public evidence feeds deterministic
+trend, cost, and routing analyses. The live evaluation records complete traces
+and paired statistics; the exploratory confidence stage consumes those
+versioned traces. Every path produces auditable paper outputs.}\label{fig:architecture}
 \end{figure}
 
 \subsection{Analysis methods}
@@ -81,3 +81,17 @@ We report exact counts, Wilson 95\% intervals, the any-sample oracle ceiling,
 and two-sided exact McNemar tests against paired greedy outcomes. Atomic
 checkpoints, JSONL traces, split/config hashes, and integrity tests are
 provided.
+\paragraph{Exploratory confidence model.} After the frozen evaluation labels
+were available, we specified a simple model to estimate whether vote-at-four
+was correct. Its seven reference-free features are plurality share, normalized
+answer entropy, the number of distinct sampled answers, agreement of plurality
+with greedy and verifier outputs, and the mean and standard deviation of
+sample-completion length. We standardize these features inside each training
+fold and fit an L2-regularized logistic regression. Five-fold stratified
+cross-validation with shuffling and seed 20260811 yields one out-of-fold
+probability for every item. We report ROC AUC, Brier score against a constant
+0.62 prevalence baseline, and accuracy among the predictions retained at fixed
+50\% and 75\% coverage. The features, folds, metrics, and coverage levels were
+set before scoring this added analysis, but the analysis itself was designed
+after the v1 outcomes were known. It is exploratory and does not constitute a
+second held-out evaluation.

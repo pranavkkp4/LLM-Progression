@@ -7,9 +7,9 @@ Rise of Task-Targeted Models"* (August 2026) and the op-ed in `op-ed/`.
 ## Layout
 
 ```
-paper/            LaTeX source (arXiv-style, Tectonic) -> compiled PDF
-  main.tex
-  sections/       one file per section
+paper/            LaTeX source (arXiv-style) -> compiled PDF
+  main.tex         self-contained submission source (no external text inputs)
+  sections/       editable section copies retained for provenance
   references.bib
   figures/        four submission figures generated from data/results
 code/
@@ -23,9 +23,10 @@ code/
   exp4_self_consistency.py  legacy 0.5B / 16-item pilot
   prepare_v1_splits.py      creates the locked dev/evaluation manifest
   exp4_v1_improved.py       chat prompts, sampling, verifier, full traces
+  exp5_confidence_model.py  exploratory out-of-fold confidence and triage
   freeze_v1_config.py       freezes a development-selected configuration
   run_frozen_v1.py          runs/resumes the single 100-item evaluation
-  make_v1_outputs.py        validates results and builds paper table/figure
+  make_v1_outputs.py        validates results and builds paper tables/figure
   run_all.py                runs exp1-3 (tests and live runs are separate)
   summarize_v1_runs.py      tabulates development screens and comparisons
 op-ed/oped.md     general-audience companion piece
@@ -33,7 +34,7 @@ op-ed/oped.md     general-audience companion piece
 
 ## Reproducing the analysis (exp1–exp3, tests)
 
-Requires Python 3.10+, `pandas`, `numpy`, `matplotlib`, `scipy`, `pytest`.
+Requires Python 3.10+, `pandas`, `numpy`, `matplotlib`, `scipy`, `scikit-learn`, and `pytest`.
 
 ```bash
 cd code
@@ -62,6 +63,13 @@ The four-point observed gain is real for these saved predictions but is not
 statistically significant on 100 items. The 79% oracle ceiling shows that
 candidate selection, not candidate generation, is the largest measured
 remaining opportunity.
+The added confidence component is explicitly post-evaluation and exploratory.
+A five-fold out-of-fold logistic regression uses only reference-free trace
+signals. It reaches ROC AUC **0.833** and Brier score **0.147**, compared with
+**0.236** for the constant-prevalence baseline. Its highest-confidence 50
+predictions include **47 correct (94.0%)**; the highest-confidence 75 include
+**53 correct (70.7%)**. This is a selective-triage result, not an increase over
+62/100 at full coverage.
 
 1. Download model files for `Qwen/Qwen2.5-1.5B-Instruct` into
    `models/Qwen2.5-1.5B-Instruct/`. Model weights are intentionally ignored by
@@ -81,13 +89,14 @@ remaining opportunity.
    records `device: cuda`.
 
    ```bash
-   pip install transformers torch pyarrow pandas scipy matplotlib pytest
+   pip install transformers torch pyarrow pandas scipy scikit-learn matplotlib pytest
    ```
 
 3. Reproduce or resume the frozen evaluation and regenerate paper outputs.
 
    ```bash
    python code/run_frozen_v1.py
+   python code/exp5_confidence_model.py
    python code/make_v1_outputs.py
    pytest code/tests -q
    ```
@@ -99,9 +108,10 @@ remaining opportunity.
 
 The committed machine-readable artifacts are under `code/results/v1/`:
 development screens and confirmations, the frozen evaluation summary,
-100-record checkpoint, and JSONL trace. `make_v1_outputs.py` verifies the
-manifest hash, split sizes/order/disjointness, trace count, selector, and
-answer parseability before writing the paper table and figure.
+100-record checkpoint, JSONL trace, out-of-fold confidence scores, and
+generated LaTeX tables. `make_v1_outputs.py` verifies the manifest hash,
+split sizes/order/disjointness, trace count, selector, and answer parseability
+before writing the paper tables and two-panel figure.
 
 
 ## Reproducing the legacy live experiment (exp4)
@@ -173,6 +183,22 @@ bibtex main
 pdflatex -interaction=nonstopmode -halt-on-error main.tex
 pdflatex -interaction=nonstopmode -halt-on-error main.tex
 ```
+
+## arXiv upload
+
+`paper/main.tex` is intentionally self-contained: section text and generated
+result tables are inlined, so it does not depend on `sections/` or `code/`.
+For submission, upload these files together:
+
+- `main.tex`, `main.bbl`, and `references.bib` from `paper/`;
+- `paper/figures/architecture.pdf`;
+- `paper/figures/results.png`;
+- `paper/figures/calibration.png`;
+- `paper/figures/robustness.pdf`.
+
+The ignored `arxiv submit/paper_arxiv.zip` contains exactly that set. Do not
+substitute an older modular `main.tex`, which will ask arXiv for missing
+`sections/*.tex` files.
 
 ## Notes and honest caveats
 

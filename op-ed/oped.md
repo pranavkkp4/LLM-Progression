@@ -76,7 +76,7 @@ four, and the software-engineering benchmark that defined 2025 is already
 96% solved. Every impressive number should come with a follow-up question:
 *and how does it do on a test it wasn't expecting?*
 
-## The sleeper trick: think longer, vote more
+## The sleeper trick: try more than once, then estimate confidence
 
 Buried in this summer's data is the most democratic finding of all. You do
 not always need a newly trained model; sometimes you need to format the task
@@ -98,6 +98,17 @@ The more tantalizing number is 79: on 79 questions, at least one of the four
 sampled answers was correct. Today's selectors recovered only 62. The model
 often generated the needed answer and then failed to recognize it. That
 17-point gap is a practical research target requiring no retraining.
+We tested one lightweight way to close part of that gap. A logistic regression
+looked only at clues available before grading: how strongly the four answers
+agreed, whether greedy and verifier outputs matched the vote, and how long the
+completions were. Across five held-out folds, it separated correct votes from
+wrong ones with an AUC of 0.833. The 50 answers it trusted most included 47
+correct ones, or 94%; its top 75 included 53, or 70.7%.
+
+That does not turn 62 correct answers into 94. It gives a system a useful
+choice: accept the most trustworthy half and route the rest to more sampling,
+a stronger model, or a person. Because we built this confidence test after the
+100 answers were graded, a fresh dataset still needs to confirm it.
 
 OpenAI uses the same broad idea at frontier scale: its flagship's "Ultra" mode
 convenes multiple agents and beats the solo model on terminal work. From a
@@ -106,7 +117,7 @@ important as *which* weights we load.
 
 ## What to do with eight years of progress
 
-Three habits are worth updating.
+So what changes in practice?
 
 **If you buy this technology:** treat the premium model as a luxury good.
 Buy it for the tasks where the last few points of quality pay for

@@ -31,10 +31,10 @@ and independent harness results; see Table~\ref{tab:timeline}). The log-linear
 fit on solve odds implies ${\sim}5.8\times$ growth per year.}\label{fig:swe}
 \end{figure}
 
-\paragraph{Takeaway.} Each benchmark era compressed: GLUE lasted about two
-years, MMLU about four, and SWE-bench Verified is on track for about two. The
-capability frontier is real and fast, but the \emph{measuring sticks} keep
-burning out --- a theme that returns in Section~\ref{sec:discussion}.
+\paragraph{Benchmark turnover accelerated.} GLUE remained discriminative
+for about two years and MMLU for roughly four; SWE-bench Verified appears
+headed toward a two-year lifespan. Capability keeps advancing, but each
+measuring stick loses headroom soon after laboratories optimize against it.
 
 \subsection{The collapse of the capability--cost curve}\label{sec:cost}
 
@@ -58,11 +58,10 @@ recall (41.3\% vs.\ 81.5\% on MRCR). Against the flagship of \emph{one year}
 ago the comparison is not close: our reconstruction of overall SWE-bench
 Verified from Vals AI's per-difficulty rows gives Luna 92.9\% vs.\ GPT-5's
 74.9\% vendor-reported score in August
-2025~\cite{vals2026swebench,localaimaster2026gpt55}. The practical conclusion:
-\textbf{capability that was flagship-class 2--12 months
-ago is now available at ${\sim}20\%$ of the flagship token price}, with the caveat
-that the
-cheapest tier gives up long-context recall and the hardest academic reasoning.
+2025~\cite{vals2026swebench,localaimaster2026gpt55}. In practical terms,
+\textbf{capability that was flagship-class 2--12 months ago now costs
+${\sim}20\%$ of the flagship token price}. The cheapest tier still gives up
+long-context recall and the hardest academic reasoning.
 
 \paragraph{The mid tier is dead.} Our Pareto analysis of the fifteen
 GPT-5.6 settings reproduces and confirms Artificial Analysis's
@@ -114,10 +113,10 @@ benchmarks.}\label{fig:heatmap}
 \paragraph{Routing recovers the optimum.} If no model wins everywhere, a router
 should beat every individual model. On the fourteen fully-covered benchmarks,
 the best single model (GPT-5.6 Sol) averages 97.6\% of the per-benchmark best;
-an oracle router averages 100\% (+2.4 points). The more useful finding: a
-router with only \emph{two} models --- GPT-5.6 Sol and Claude Fable~5 ---
-already captures 100\% of the oracle gain on this suite, because their
-strengths are complementary (agentic vs.\ repo-level/math work). A
+an oracle router averages 100\% (+2.4 points). A router with only
+\emph{two} models --- GPT-5.6 Sol and Claude Fable~5 --- already captures the
+entire oracle gain on this suite because their strengths are complementary
+(agentic vs.\ repository-level and mathematical work). A
 cost-constrained router that picks the cheapest model within one point of the
 best matches the oracle score at 95\% of its cost --- the savings are modest
 precisely because Sol's wins are usually by wide margins
@@ -135,6 +134,6 @@ subagents)~\cite{openai2026gpt56}. And the cautionary case: Opus~5's record
 ARC-AGI-3 gain partially failed to transfer to Witness, an independent
 held-out puzzle benchmark (43.4, statistically tied with K3 and Fable~5),
 consistent with training on genre-adjacent data~\cite{decoder2026opus5,techtimes2026opus5}.
-Targeting a task family works --- but gains measured on the targeted benchmark
-overstate the transferable component. We return to this in
-Section~\ref{sec:discussion}.
+Targeting a task family works, although gains measured on its benchmark
+can overstate what transfers to new settings. Section~\ref{sec:discussion}
+examines this tension.

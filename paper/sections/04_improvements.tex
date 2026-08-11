@@ -1,33 +1,35 @@
-\section{Getting more from existing models: three suggestions, tested}\label{sec:improvements}
+\section{Improving fixed models at inference time}\label{sec:improvements}
 
-The analyses above suggest three actionable ways to improve effective model
-performance without training anything. We test each with code.
+We evaluate three ways to raise effective performance without retraining:
+sample more than once, match reasoning effort to the workload, and route work
+to specialized models.
 
-\subsection{Suggestion 1: Spend test-time compute; sample and vote}\label{sec:selfcons}
+\subsection{Sample, then aggregate}\label{sec:selfcons}
 
-\paragraph{Claim.} For problems with verifiable answers, sampling several
-independent solutions and aggregating them can improve the effective system
-without changing its weights (self-consistency~\cite{wang2022selfconsistency}).
-Whether it helps is empirical: a selector can also discard a correct candidate.
+\paragraph{Why multiple attempts can help.} On problems with verifiable
+answers, independent samples can expose solution paths that greedy decoding
+misses. Self-consistency aggregates those attempts without changing model
+weights~\cite{wang2022selfconsistency}. The selector still matters: a poor
+rule can discard the only correct candidate.
 
-\paragraph{Development protocol.} We treat the original 16-item
-Qwen2.5-0.5B-Instruct run as development evidence, not as a final estimate.
-Before tuning, we lock a disjoint 100-item evaluation set. On the first eight
-development items we screen three official-chat-template prompts (concise,
-four-shot, and solve-and-check) at temperatures 0.4 and 0.7. We confirm the
-leading four-shot/0.4 prompt on all 16 items, compare 0.5B and 1.5B models, and
-measure plurality prefixes plus a candidate verifier. The selected
-configuration is written to a frozen manifest before the evaluation run.
+\paragraph{Development and model selection.} We use the original 16-item
+Qwen2.5-0.5B-Instruct run as development evidence, not a final estimate, and
+lock a disjoint 100-item evaluation set before tuning. The first eight
+development items screen three official-chat prompts (concise, four-shot, and
+solve-and-check) at temperatures 0.4 and 0.7. We confirm the leading
+four-shot/0.4 prompt on all 16 items, compare 0.5B and 1.5B models, and measure
+plurality prefixes alongside a candidate verifier. A frozen manifest records
+the selected configuration before evaluation begins.
 
-\paragraph{What changed.} The legacy raw-prompt 0.5B pilot produced 1/16
-greedy and 2/16 vote-at-eight. With the official instruction template,
-four worked examples, and temperature 0.4, the same 0.5B model produced 5/16
-greedy and 6/16 vote-at-four/verifier. Holding that configuration fixed, the
-1.5B model produced 8/16 for greedy, vote-at-four, and verifier on CPU.
-Thus prompt formatting supplied the largest development gain; model size
-improved greedy and the selected vote, while the verifier added no development
-accuracy. These are selection-set results and are not treated as unbiased
-performance estimates.
+\paragraph{Development results.} The legacy raw-prompt 0.5B pilot produced
+1/16 greedy and 2/16 vote-at-eight. The official instruction template, four
+worked examples, and temperature 0.4 raised the same model to 5/16 greedy and
+6/16 with vote-at-four or the verifier. With that setup held fixed, the 1.5B
+model reached 8/16 under greedy, vote-at-four, and verifier decoding on CPU.
+Prompt formatting supplied the largest development gain. Model size improved
+greedy and the selected vote, whereas the verifier added no development
+accuracy. Because these results guided selection, we do not treat them as
+unbiased performance estimates.
 
 \begin{table}[t]
 \centering
@@ -41,29 +43,30 @@ selection and must not be read as holdout estimates.}\label{tab:v1dev}
 \paragraph{Frozen evaluation.} The manifest fixes
 Qwen2.5-1.5B-Instruct, four-shot official chat formatting, $k=4$,
 temperature 0.4, top-$p=0.95$, seed 1234, and plurality as the primary
-selector. The verifier is a prespecified secondary selector. The CUDA run
-processes the 100 locked items once and stores all 100 paired traces.
+selector; it names the verifier as secondary. We run the 100 locked items once
+on CUDA and retain every paired trace.
 \input{../code/results/v1/v1_evaluation_sentence.tex}
-The primary observed gain is four percentage points (6.9\% relative), but its
-confidence interval overlaps the greedy interval and the paired test does not
-reject equality. We therefore call this an observed improvement, not a
-statistically established population effect.
+This four-point gain equals a 6.9\% relative improvement in the saved run, but
+the confidence intervals overlap and the paired test does not reject equality.
+We therefore describe an observed improvement, not an established population
+effect.
 
-\paragraph{Where improvement remains.} All 400 sampled answers were parseable,
-and at least one of four samples was correct on 79/100 items. Plurality and the
-verifier each recovered 62/100, leaving a 17-point selector gap to that oracle
-ceiling. The verifier tied plurality on evaluation after underperforming it in
-the CUDA development verification (6/16 versus 10/16), so more elaborate
-selection is not automatically better. The concrete opportunity is to identify
-the correct minority candidate without overriding correct consensus.
+\paragraph{Selection remains the bottleneck.} All 400 sampled answers were
+parseable, and at least one sample was correct on 79/100 items. Plurality and
+the verifier each recovered 62/100, leaving a 17-point gap to the oracle
+ceiling. The verifier tied plurality on evaluation after trailing it in the
+CUDA development check (6/16 versus 10/16). Complexity alone did not help; a
+better selector must find correct minority candidates without disturbing
+correct consensus.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.92\linewidth]{figures/calibration.png}
-\caption{Locked 100-item GSM8K evaluation. Bars show exact-match accuracy;
-error bars are Wilson 95\% intervals. Vote-at-four was the frozen primary,
-the verifier was secondary, and the any-sample oracle is a diagnostic ceiling.
-The dashed line marks greedy accuracy.}\label{fig:selfcons}
+\caption{Frozen evaluation and exploratory confidence triage. The left
+panel reports exact-match accuracy with Wilson 95\% intervals; vote-at-four is
+the primary result and the any-sample oracle is a diagnostic ceiling. The
+right panel ranks vote-at-four predictions by out-of-fold confidence and shows
+accuracy at fixed coverage. Dashed lines mark the full-set baselines.}\label{fig:selfcons}
 \end{figure}
 
 \begin{table}[t]
@@ -74,58 +77,81 @@ greedy; the primary exact McNemar test gives $p=0.481$.}\label{tab:selfcons}
 \resizebox{\linewidth}{!}{\input{../code/results/v1/v1_evaluation_table.tex}}
 \end{table}
 
-\paragraph{Reproducibility.} Sampling with the same seed produced different
-candidate draws on CPU and CUDA, although greedy correctness was identical
-(8/16) in the development check. We therefore record the execution device in
-the result JSON and report the CUDA artifact used for the 100-item estimate.
-This experiment is the small-scale analogue of frontier multi-sample and
-multi-agent inference, such as Sol Ultra's 91.9\% versus 88.8\% single-agent
-Terminal-Bench result~\cite{openai2026gpt56}.
+\paragraph{Reproducibility.} The same seed produced different candidate
+draws on CPU and CUDA, although greedy correctness remained 8/16 in the
+development check. The result JSON therefore records the execution device, and
+the paper uses the CUDA artifact from the 100-item evaluation. This experiment
+mirrors frontier multi-sample and multi-agent inference at small scale; for
+example, Sol Ultra reports 91.9\% on Terminal-Bench versus 88.8\% for the
+single-agent setting~\cite{openai2026gpt56}.
 
-\subsection{Suggestion 2: Calibrate reasoning effort; more is not better}\label{sec:effort}
+\subsection{Estimate confidence for selective use}\label{sec:confidence}
 
-\paragraph{Claim.} Cranking reasoning effort to maximum is often worse
-\emph{and} more expensive.
+After the v1 labels were available, we asked whether the traces could identify
+reliable vote-at-four outputs without looking at reference answers. We fixed
+seven inexpensive signals before scoring the new analysis: plurality share,
+answer entropy and diversity, agreement with greedy and verifier outputs, and
+two completion-length statistics. An L2-regularized logistic regression
+produces one out-of-fold confidence score for each item under five-fold
+stratified cross-validation.
 
-\paragraph{Evidence.} Two independent data points. First, Anthropic's own
-score-vs-cost curves show Opus~5's Frontier-Bench score peaks at
-\emph{xhigh} effort (44.4\%) and \emph{drops} at max (43.3\%) while costing
-more; community re-analysis of Anthropic's Frontier-code chart found the peak
-at medium effort (${\sim}53\%$)~\cite{anthropic2026opus5}.
-Second, our Pareto analysis shows each
-${\sim}4$-point intelligence gain from Luna-max to Terra-max to Sol-max
-multiplies per-task cost by $2.6\times$ and $1.9\times$
-respectively~\cite{gist2026aa56}. A plausible mechanism is overthinking: on
-tasks with a direct solution path, longer chains can wander.
-\textbf{Recommendation:} treat effort as a per-workload hyperparameter with a
-measured optimum, not a quality dial to max out.
+The model separates correct from incorrect vote-at-four outputs with ROC AUC
+0.833. Its Brier score is 0.147, compared with 0.236 for a constant prediction
+equal to the 62\% prevalence. Confidence ranking is more useful operationally:
+the top 50 predictions contain 47 correct answers (94.0\%), and the top 75
+contain 53 (70.7\%). Full coverage necessarily returns to the frozen 62/100
+result.
 
-\subsection{Suggestion 3: Route tasks to specialized models}\label{sec:routing}
+\begin{table}[H]
+\centering
+\caption{Exploratory selective accuracy from five-fold out-of-fold confidence
+scores. Coverage levels were fixed before scoring. Top refers to confidence
+rank, not a second evaluation split.}\label{tab:mlconfidence}
+\small
+\input{../code/results/v1/ml_confidence_table.tex}
+\end{table}
 
-\paragraph{Claim.} Because the frontier is task-fragmented
-(Section~\ref{sec:specialization}), routing each workload to the right model
-beats committing to any single model.
+A deployed system could accept the high-confidence half and send the remainder
+to additional sampling, a larger model, or human review. This procedure
+improves the accuracy of the retained set, not full-coverage exact match.
+Because the same 100 labels both train and assess the cross-validated model,
+independent data must confirm the result.
 
-\paragraph{Evidence.} Our oracle analysis: best single model averages 97.6\% of
-per-benchmark best across the fourteen fully-covered benchmarks; an oracle
-scores 100; and a two-model router (Sol + Fable~5) already captures the entire
-gain. Production teams are converging on this pattern --- model-abstraction
-layers that swap models at the routing layer~\cite{explainx2026gpt56} ---
-and practitioners already pair a strong planner with a cheap executor (``Sol
-medium for architecting, Luna high for
-coding'')~\cite{hn2026gpt56}. \textbf{Recommendation:} a small router over two
-complementary frontier models, with a budget tier for well-defined subtasks,
-dominates any single-model deployment on quality; add the budget tier for
-cost.
+\subsection{Match reasoning effort to the workload}\label{sec:effort}
 
-\subsection{What we would tell the labs}\label{sec:labs}
-The same analyses generate suggestions for model builders: (i) report
-score-vs-cost curves for every benchmark, as Anthropic now does --- single
-numbers invite cherry-picking~\cite{anthropic2026opus5}; (ii) close the
-budget-tier long-context cliff (Luna's 41.3\% MRCR vs.\ Sol's
-91.5\%~\cite{openai2026gpt56}), the one place the cheap model is not
-near-flagship; (iii) publish held-out transfer evaluations alongside targeted
-benchmarks (the ARC-AGI-3/Witness gap in Section~\ref{sec:specialization});
-and (iv) invest in mid-context retrieval rather than context length alone ---
-K3's BrowseComp result suggests retrieval quality, not window size, is the
-binding constraint~\cite{moonshot2026k3}.
+Maximum effort can cost more while producing a worse answer. Anthropic's
+score--cost curves put Opus~5's Frontier-Bench peak at \emph{xhigh} effort
+(44.4\%); max effort falls to 43.3\% despite consuming more compute. A
+community re-analysis of Anthropic's Frontier-code chart places that peak near
+medium effort (${\sim}53\%$)~\cite{anthropic2026opus5}. Our Pareto analysis
+shows a different part of the same tradeoff: each roughly four-point
+intelligence gain from Luna-max to Terra-max to Sol-max multiplies per-task
+cost by $2.6\times$ and then $1.9\times$~\cite{gist2026aa56}. Longer chains
+can wander on tasks with direct solution paths. Deployments should therefore
+measure effort per workload and use its empirical optimum rather than treating
+maximum effort as a universal quality setting.
+
+\subsection{Route work across specialized models}\label{sec:routing}
+
+The fragmented frontier in Section~\ref{sec:specialization} makes routing more
+effective than a single default model. Across the fourteen fully covered
+benchmarks, the best individual model averages 97.6\% of the per-benchmark
+maximum. An oracle reaches 100, and a two-model combination of Sol and Fable~5
+captures that entire gain. Production systems increasingly expose this choice
+through model-abstraction layers~\cite{explainx2026gpt56}; practitioners also
+pair a strong planner with a cheaper executor, such as ``Sol medium for
+architecting, Luna high for coding''~\cite{hn2026gpt56}. Two complementary
+frontier models can cover quality-sensitive work, while a budget tier handles
+well-defined subtasks at lower cost.
+
+\subsection{Reporting priorities for model builders}\label{sec:labs}
+Model builders can make these tradeoffs easier to evaluate by publishing
+score--cost curves for every benchmark; single endpoint numbers invite
+cherry-picking~\cite{anthropic2026opus5}. Budget models also need better
+long-context recall: Luna scores 41.3\% on MRCR against Sol's
+91.5\%~\cite{openai2026gpt56}, the clearest break from its near-flagship
+pattern. Held-out transfer suites should accompany targeted benchmarks, as the
+ARC-AGI-3/Witness gap in Section~\ref{sec:specialization} demonstrates.
+K3's BrowseComp result further points toward better mid-context retrieval, not
+longer context windows alone, as the more valuable investment
+target~\cite{moonshot2026k3}.

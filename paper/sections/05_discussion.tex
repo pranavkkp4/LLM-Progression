@@ -1,28 +1,30 @@
 \section{Discussion: how models get good at specific tasks}\label{sec:discussion}
 
-The 2026 pattern --- one frontier, several winners --- is the predictable
-output of how frontier models are now built. We see at least four levers.
+The 2026 pattern --- one frontier, several winners --- follows directly
+from the way laboratories now build frontier models.
 
-\paragraph{1. Domain-weighted post-training.} Reinforcement learning on
+\paragraph{Domain-weighted post-training.} Reinforcement learning on
 verifiable, domain-specific rewards (unit tests for code, proof checkers for
 math, task-completion signals for agents) lets a lab buy capability in a chosen
 vertical. Moonshot's agentic suite results and OpenAI's terminal/agentic lead
 both track heavy RL investment in those task
 families~\cite{moonshot2026k3,openai2026gpt56}.
 
-\paragraph{2. Architecture as targeting.} Kimi~K3's hybrid linear attention
+\paragraph{Architecture as targeting.} Kimi~K3's hybrid linear attention
 (Kimi Delta Attention) and expert-routing changes were chosen for long-context
 agentic efficiency, and the payoff appeared precisely on long-horizon
 benchmarks (BrowseComp 91.2, state of the art at
 release)~\cite{moonshot2026k3}.
 
-\paragraph{3. Inference-time structure.} GPT-5.6's Ultra mode makes
-multi-agent fan-out a first-class feature, buying Terminal-Bench points
-(88.8\%~$\to$~91.9\%) at higher cost~\cite{openai2026gpt56}.
-Our self-consistency experiment (Section~\ref{sec:selfcons}) is the same lever
-at toy scale: capability is partly a function of inference-time orchestration.
+\paragraph{Inference-time structure.} GPT-5.6's Ultra mode makes
+multi-agent fan-out a first-class feature and buys Terminal-Bench points
+(88.8\%~$\to$~91.9\%) at higher cost~\cite{openai2026gpt56}. Our
+self-consistency experiment (Section~\ref{sec:selfcons}) applies the same lever
+at small scale. The exploratory confidence model adds a routing signal: accept
+high-confidence answers, then reserve additional compute or review for the
+rest. Capability depends partly on how a system orchestrates inference.
 
-\paragraph{4. Benchmark-shaped optimization (and its limits).} When a benchmark
+\paragraph{Benchmark-shaped optimization and its limits.} When a benchmark
 becomes a target, labs optimize toward it, and two failure modes follow: the
 benchmark saturates (GLUE, MMLU, soon SWE-bench Verified), or gains fail to
 transfer off-distribution. The Witness evaluation of Opus~5 is the cleanest
@@ -51,19 +53,21 @@ is no longer ``a model'' but a routing policy with per-task effort settings.
 The 2023 question ``which model is best?'' has been replaced by ``which
 combination, at which effort, for which task?''
 
-\paragraph{Limitations.} This study has several. (i) Mid-2026 scores mix
-vendor and independent evaluations; we label provenance but cannot fully
-deconfound harness differences (e.g., GPT-5.5 scores 85.1\% vendor-reported
-vs.\ 82.6\% reconstructed from Vals AI's independent
-harness)~\cite{localaimaster2026gpt55,vals2026swebench}. (ii) The SWE-bench
-trend fit pools vendor and independent numbers and spans only 22 months; the
-$5.8\times$ figure should be read as an order of magnitude. (iii) The routing
-oracle uses benchmark identities as a proxy for task identity; real routers
-must infer task type from unlabeled traffic. (iv) The v1 intervention was
-selected on only 16 development items and evaluated once on 100 GSM8K items;
-it covers one model family, one task, and one evaluation seed. Its four-point
-primary gain is not statistically significant ($p=0.481$), and the Wilson
-intervals remain broad. (v) Seeded sampling is backend-sensitive: CPU and CUDA
-produced different sampled candidates, so exact replay requires the recorded
-software and device context. (vi) The field moves weekly; public benchmark
-figures are current as of August 10, 2026.
+\paragraph{Limitations.} Mid-2026 scores mix vendor and independent
+evaluations. Provenance labels cannot fully remove harness differences:
+GPT-5.5, for example, scores 85.1\% in the vendor report and 82.6\% in our
+reconstruction of Vals AI's independent
+harness~\cite{localaimaster2026gpt55,vals2026swebench}. The SWE-bench trend
+also pools both sources across only 22 months, so $5.8\times$ indicates scale
+rather than a stable law. Our routing oracle knows benchmark identity; a
+production router must infer task type from unlabeled traffic.
+
+The v1 intervention used 16 development items and one 100-item GSM8K
+evaluation. It covers a single model family, task, and sampling seed. Its
+four-point primary gain is not statistically significant ($p=0.481$), and the
+Wilson intervals remain broad. We designed the confidence model after those
+labels were visible and assessed it by cross-validation on the same 100 items.
+Its AUC and 94\% top-half accuracy are exploratory until a new dataset confirms
+them. Seeded candidates also differ between CPU and CUDA, so exact replay
+requires the recorded software and device context. Public benchmark figures
+are current as of August 10, 2026, in a field that changes weekly.
