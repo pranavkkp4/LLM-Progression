@@ -220,7 +220,41 @@ def write_sentence(final: dict) -> None:
     )
 
 
-def make_figure(final: dict) -> None:
+def write_ml_table(ml: dict) -> None:
+    if ml["analysis_role"] != "post-evaluation exploratory confidence analysis":
+        raise RuntimeError("confidence results must remain explicitly exploratory")
+    if ml["n_items"] != 100 or ml["positive_items"] != 62:
+        raise RuntimeError("confidence result does not match the frozen evaluation")
+    trace_sha256 = hashlib.sha256(FINAL_TRACES.read_bytes()).hexdigest()
+    if ml["input_trace_sha256"] != trace_sha256:
+        raise RuntimeError("confidence result does not match the frozen trace")
+    coverage = [row["coverage"] for row in ml["selective_accuracy"]]
+    if coverage != [0.5, 0.75, 1.0]:
+        raise RuntimeError("unexpected selective-coverage levels")
+    rows = [
+        ("Top half", ml["selective_accuracy"][0]),
+        ("Top three quarters", ml["selective_accuracy"][1]),
+        ("All items", ml["selective_accuracy"][2]),
+    ]
+    lines = [
+        r"\begin{tabular}{lrrr}",
+        r"\toprule",
+        r"Confidence-ranked set & Coverage & Correct & Accuracy \\",
+        r"\midrule",
+    ]
+    for name, row in rows:
+        lines.append(
+            f"{name} & {row['n_selected']}/100 & "
+            f"{row['correct']}/{row['n_selected']} & "
+            f"{pct(row['accuracy'])} \\\\"
+        )
+    lines.extend([r"\bottomrule", r"\end{tabular}", ""])
+    (V1 / "ml_confidence_table.tex").write_text(
+        "\n".join(lines), encoding="utf-8"
+    )
+
+
+def make_figure(final: dict, ml: dict) -> None:
     labels = ["Greedy", "Sample\n@ 1", "Vote\n@ 2", "Vote\n@ 4", "Verifier", "Oracle\nany"]
     counts = [
         final["greedy_correct"],
@@ -244,7 +278,8 @@ def make_figure(final: dict) -> None:
         [ci[1] - value for value, ci in zip(values, cis)],
     ]
     colors = ["#64748b", "#93c5fd", "#60a5fa", "#2563eb", "#7c3aed", "#d97706"]
-    fig, ax = plt.subplots(figsize=(8.2, 4.8))
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.8))
+    ax = axes[0]
     bars = ax.bar(
         labels, values, yerr=errors, capsize=4, color=colors,
         edgecolor="#1f2937", linewidth=0.7
@@ -259,6 +294,43 @@ def make_figure(final: dict) -> None:
             bar.get_x() + bar.get_width() / 2, value + 2.2,
             f"{value:.0f}%", ha="center", va="bottom", fontsize=9
         )
+    confidence_ax = axes[1]
+    selective = ml["selective_accuracy"]
+    coverage_labels = ["Top 50%", "Top 75%", "All"]
+    selective_values = [row["accuracy"] for row in selective]
+    confidence_bars = confidence_ax.bar(
+        coverage_labels,
+        selective_values,
+        color=["#059669", "#34d399", "#94a3b8"],
+        edgecolor="#1f2937",
+        linewidth=0.7,
+    )
+    confidence_ax.axhline(
+        final["selected_accuracy"], color="#475569", linestyle="--", linewidth=1
+    )
+    confidence_ax.set_ylim(0, 100)
+    confidence_ax.set_ylabel("Vote@4 accuracy (%)")
+    confidence_ax.set_title("Out-of-fold confidence triage")
+    confidence_ax.grid(axis="y", alpha=0.2)
+    confidence_ax.text(
+        0.98,
+        0.04,
+        f"AUC = {ml['metrics']['roc_auc']:.3f}\n"
+        f"Brier = {ml['metrics']['brier_score']:.3f}",
+        transform=confidence_ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=9,
+    )
+    for bar, value in zip(confidence_bars, selective_values):
+        confidence_ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 2.0,
+            f"{value:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+        )
     fig.tight_layout()
     PAPER_FIGURES.mkdir(parents=True, exist_ok=True)
     fig.savefig(PAPER_FIGURES / "calibration.png", dpi=220)
@@ -269,15 +341,18 @@ def main() -> None:
     legacy = load(RESULTS / "self_consistency_results.json")
     dev05 = load(V1 / "dev_fewshot_t04_qwen05_results.json")
     dev15 = load(V1 / "dev_fewshot_t04_qwen15_results.json")
+    ml = load(V1 / "ml_confidence_results.json")
     final = load(V1 / "v1_final_results.json")
     validate(final)
     write_final_table(final)
     write_development_table(legacy, dev05, dev15, final)
+    write_ml_table(ml)
     write_sentence(final)
-    make_figure(final)
+    make_figure(final, ml)
     print(V1 / "v1_evaluation_table.tex")
     print(V1 / "v1_development_table.tex")
     print(V1 / "v1_evaluation_sentence.tex")
+    print(V1 / "ml_confidence_table.tex")
     print(PAPER_FIGURES / "calibration.png")
 
 

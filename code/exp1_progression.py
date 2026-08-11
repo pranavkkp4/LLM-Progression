@@ -51,7 +51,7 @@ def make_architecture_figure():
         (0.80, 0.58, 0.18, 0.25, "Paper outputs\nfigures + exact claims"),
         (0.28, 0.12, 0.19, 0.25, "Official GSM8K\n+ local Qwen weights"),
         (0.54, 0.12, 0.19, 0.25, "Seeded decoding\n+ resumable checkpoint"),
-        (0.80, 0.12, 0.18, 0.25, "Complete traces\n+ paired statistics"),
+        (0.80, 0.12, 0.18, 0.25, "Traces + paired tests\n+ OOF confidence"),
     ]
     colors = ["#dbeafe", "#dcfce7", "#fef3c7", "#f3e8ff",
               "#dcfce7", "#fef3c7", "#f3e8ff"]

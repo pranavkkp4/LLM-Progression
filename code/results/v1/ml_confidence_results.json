@@ -1,0 +1,704 @@
+{
+  "schema_version": 1,
+  "analysis_role": "post-evaluation exploratory confidence analysis",
+  "input_trace": "code/results/v1/v1_final_traces.jsonl",
+  "input_trace_sha256": "45f4a97c9fbd93ea091fbca6de02098d84a3dd64ec9f04dc11a26434ab020353",
+  "target": "vote_at_4_exact_match_correct",
+  "features": [
+    "plurality_share",
+    "normalized_vote_entropy",
+    "distinct_answers",
+    "greedy_agrees_plurality",
+    "verifier_agrees_plurality",
+    "mean_generation_chars",
+    "std_generation_chars"
+  ],
+  "feature_policy": "reference-free signals available after inference",
+  "model": {
+    "estimator": "StandardScaler + L2 logistic regression",
+    "C": 1.0,
+    "solver": "liblinear",
+    "scikit_learn_version": "1.8.0"
+  },
+  "cross_validation": {
+    "method": "StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 20260811
+  },
+  "n_items": 100,
+  "positive_items": 62,
+  "metrics": {
+    "roc_auc": 0.8331918505942274,
+    "brier_score": 0.14696992614611276,
+    "log_loss": 0.47779455446836494,
+    "accuracy_at_0_5": 83.0
+  },
+  "constant_prevalence_baseline": {
+    "probability": 0.62,
+    "brier_score": 0.23560000000000006,
+    "log_loss": 0.6640641265641082,
+    "majority_class_accuracy": 62.0
+  },
+  "selective_accuracy": [
+    {
+      "coverage": 0.5,
+      "n_selected": 50,
+      "correct": 47,
+      "accuracy": 94.0,
+      "minimum_oof_probability": 0.7173169902414439
+    },
+    {
+      "coverage": 0.75,
+      "n_selected": 75,
+      "correct": 53,
+      "accuracy": 70.66666666666667,
+      "minimum_oof_probability": 0.2740801464444957
+    },
+    {
+      "coverage": 1.0,
+      "n_selected": 100,
+      "correct": 62,
+      "accuracy": 62.0,
+      "minimum_oof_probability": 0.03851465162084664
+    }
+  ],
+  "probability_quartiles": [
+    {
+      "bin": 1,
+      "n": 25,
+      "mean_oof_probability": 0.13120966737515777,
+      "observed_accuracy": 36.0
+    },
+    {
+      "bin": 2,
+      "n": 25,
+      "mean_oof_probability": 0.47158509175689234,
+      "observed_accuracy": 24.0
+    },
+    {
+      "bin": 3,
+      "n": 25,
+      "mean_oof_probability": 0.879727695567667,
+      "observed_accuracy": 100.0
+    },
+    {
+      "bin": 4,
+      "n": 25,
+      "mean_oof_probability": 0.9328119295481875,
+      "observed_accuracy": 88.0
+    }
+  ],
+  "full_sample_standardized_coefficients": {
+    "plurality_share": 0.2544212734388763,
+    "normalized_vote_entropy": -0.7032431250030281,
+    "distinct_answers": -0.36338241710978036,
+    "greedy_agrees_plurality": 0.35821823590993823,
+    "verifier_agrees_plurality": 0.3110364578602428,
+    "mean_generation_chars": -0.27325833222903245,
+    "std_generation_chars": 0.30472755499514015
+  },
+  "full_sample_intercept": 0.7163292086828931,
+  "items": [
+    {
+      "id": "gsm8k-test-794",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9345372795107142
+    },
+    {
+      "id": "gsm8k-test-1132",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.3855794985148344
+    },
+    {
+      "id": "gsm8k-test-88",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9014977794802349
+    },
+    {
+      "id": "gsm8k-test-716",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9018860706851209
+    },
+    {
+      "id": "gsm8k-test-898",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9146881217493527
+    },
+    {
+      "id": "gsm8k-test-561",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9134480957434978
+    },
+    {
+      "id": "gsm8k-test-529",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9315352792088515
+    },
+    {
+      "id": "gsm8k-test-461",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9349657629549598
+    },
+    {
+      "id": "gsm8k-test-933",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.7381938640570129
+    },
+    {
+      "id": "gsm8k-test-442",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.17257274720288052
+    },
+    {
+      "id": "gsm8k-test-578",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9189577901896783
+    },
+    {
+      "id": "gsm8k-test-812",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.35605666044373396
+    },
+    {
+      "id": "gsm8k-test-213",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.8978846764216245
+    },
+    {
+      "id": "gsm8k-test-1051",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9090951638388579
+    },
+    {
+      "id": "gsm8k-test-159",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.4315182052954301
+    },
+    {
+      "id": "gsm8k-test-219",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.9248573202866446
+    },
+    {
+      "id": "gsm8k-test-982",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.3561885248391508
+    },
+    {
+      "id": "gsm8k-test-766",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9202320890716171
+    },
+    {
+      "id": "gsm8k-test-71",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9130312123563264
+    },
+    {
+      "id": "gsm8k-test-532",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.07464023475190187
+    },
+    {
+      "id": "gsm8k-test-111",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.22096893477879312
+    },
+    {
+      "id": "gsm8k-test-659",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.9270785536177341
+    },
+    {
+      "id": "gsm8k-test-1279",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.6981082107499057
+    },
+    {
+      "id": "gsm8k-test-1242",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9519716335031022
+    },
+    {
+      "id": "gsm8k-test-103",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.8957066956025378
+    },
+    {
+      "id": "gsm8k-test-1203",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.27768698440012773
+    },
+    {
+      "id": "gsm8k-test-938",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.36391472820373016
+    },
+    {
+      "id": "gsm8k-test-602",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9434270857663669
+    },
+    {
+      "id": "gsm8k-test-645",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.8067557594906265
+    },
+    {
+      "id": "gsm8k-test-125",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9075443144522515
+    },
+    {
+      "id": "gsm8k-test-1251",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.32437351411668713
+    },
+    {
+      "id": "gsm8k-test-896",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.04920996642928771
+    },
+    {
+      "id": "gsm8k-test-644",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9226929956769102
+    },
+    {
+      "id": "gsm8k-test-855",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.14702750362235661
+    },
+    {
+      "id": "gsm8k-test-929",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9245410207265482
+    },
+    {
+      "id": "gsm8k-test-1282",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.15899275167790097
+    },
+    {
+      "id": "gsm8k-test-208",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.911243799684465
+    },
+    {
+      "id": "gsm8k-test-769",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.07114392787242933
+    },
+    {
+      "id": "gsm8k-test-81",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.8911580222142417
+    },
+    {
+      "id": "gsm8k-test-895",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.909975857152939
+    },
+    {
+      "id": "gsm8k-test-198",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.7173169902414439
+    },
+    {
+      "id": "gsm8k-test-345",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9038632394313929
+    },
+    {
+      "id": "gsm8k-test-1141",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.8972432019028123
+    },
+    {
+      "id": "gsm8k-test-237",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9159020108285748
+    },
+    {
+      "id": "gsm8k-test-315",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.18465054508680925
+    },
+    {
+      "id": "gsm8k-test-47",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.07363387614241695
+    },
+    {
+      "id": "gsm8k-test-1197",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.7447912134249348
+    },
+    {
+      "id": "gsm8k-test-538",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.8906038528711948
+    },
+    {
+      "id": "gsm8k-test-384",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.5069650409566197
+    },
+    {
+      "id": "gsm8k-test-6",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9074351057261303
+    },
+    {
+      "id": "gsm8k-test-869",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9357689262206241
+    },
+    {
+      "id": "gsm8k-test-1084",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.0754553436995451
+    },
+    {
+      "id": "gsm8k-test-372",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.22362489601375918
+    },
+    {
+      "id": "gsm8k-test-176",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.6512906694669299
+    },
+    {
+      "id": "gsm8k-test-837",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.2678174363710884
+    },
+    {
+      "id": "gsm8k-test-215",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9417247424267603
+    },
+    {
+      "id": "gsm8k-test-710",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.6320887331325258
+    },
+    {
+      "id": "gsm8k-test-185",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9109426730517581
+    },
+    {
+      "id": "gsm8k-test-484",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9070299531343545
+    },
+    {
+      "id": "gsm8k-test-1006",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.13279084164268623
+    },
+    {
+      "id": "gsm8k-test-329",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9334804573289859
+    },
+    {
+      "id": "gsm8k-test-588",
+      "fold": 3,
+      "target": 1,
+      "oof_probability": 0.9069862928115728
+    },
+    {
+      "id": "gsm8k-test-328",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.28181402168352315
+    },
+    {
+      "id": "gsm8k-test-430",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.45429552092205744
+    },
+    {
+      "id": "gsm8k-test-133",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9045585640566303
+    },
+    {
+      "id": "gsm8k-test-1191",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.09306734091394676
+    },
+    {
+      "id": "gsm8k-test-919",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9276507161252787
+    },
+    {
+      "id": "gsm8k-test-1263",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9344956896620235
+    },
+    {
+      "id": "gsm8k-test-326",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.646059445026681
+    },
+    {
+      "id": "gsm8k-test-303",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.07125364065458348
+    },
+    {
+      "id": "gsm8k-test-109",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.9155864737218495
+    },
+    {
+      "id": "gsm8k-test-314",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.13153159944795587
+    },
+    {
+      "id": "gsm8k-test-1137",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.0865768954499995
+    },
+    {
+      "id": "gsm8k-test-322",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.03851465162084664
+    },
+    {
+      "id": "gsm8k-test-101",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.4182875111650333
+    },
+    {
+      "id": "gsm8k-test-439",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.628844455887112
+    },
+    {
+      "id": "gsm8k-test-706",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.2740801464444957
+    },
+    {
+      "id": "gsm8k-test-1159",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.07391278184917167
+    },
+    {
+      "id": "gsm8k-test-440",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.08076935918302876
+    },
+    {
+      "id": "gsm8k-test-700",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.40920428931184333
+    },
+    {
+      "id": "gsm8k-test-501",
+      "fold": 5,
+      "target": 1,
+      "oof_probability": 0.9202976811402964
+    },
+    {
+      "id": "gsm8k-test-1069",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.705843292515756
+    },
+    {
+      "id": "gsm8k-test-1036",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9347254141112952
+    },
+    {
+      "id": "gsm8k-test-563",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.3585031905096546
+    },
+    {
+      "id": "gsm8k-test-419",
+      "fold": 1,
+      "target": 0,
+      "oof_probability": 0.9797179757144577
+    },
+    {
+      "id": "gsm8k-test-1316",
+      "fold": 2,
+      "target": 0,
+      "oof_probability": 0.5921911225216515
+    },
+    {
+      "id": "gsm8k-test-130",
+      "fold": 3,
+      "target": 0,
+      "oof_probability": 0.5980719259803531
+    },
+    {
+      "id": "gsm8k-test-1017",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.07643132659446515
+    },
+    {
+      "id": "gsm8k-test-311",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.8987722714192192
+    },
+    {
+      "id": "gsm8k-test-1057",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9260428941856733
+    },
+    {
+      "id": "gsm8k-test-601",
+      "fold": 4,
+      "target": 0,
+      "oof_probability": 0.30215371960266635
+    },
+    {
+      "id": "gsm8k-test-102",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.11843519581277466
+    },
+    {
+      "id": "gsm8k-test-942",
+      "fold": 5,
+      "target": 0,
+      "oof_probability": 0.22230177882426852
+    },
+    {
+      "id": "gsm8k-test-713",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.19232417145994113
+    },
+    {
+      "id": "gsm8k-test-261",
+      "fold": 2,
+      "target": 1,
+      "oof_probability": 0.24259393727610618
+    },
+    {
+      "id": "gsm8k-test-69",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9435654137829921
+    },
+    {
+      "id": "gsm8k-test-843",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.9062277199404917
+    },
+    {
+      "id": "gsm8k-test-946",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.5233177370932764
+    },
+    {
+      "id": "gsm8k-test-1205",
+      "fold": 4,
+      "target": 1,
+      "oof_probability": 0.6131901451385292
+    },
+    {
+      "id": "gsm8k-test-352",
+      "fold": 1,
+      "target": 1,
+      "oof_probability": 0.9618549111933961
+    }
+  ]
+}
