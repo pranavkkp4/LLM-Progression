@@ -12,6 +12,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.patches import FancyBboxPatch
 
 ROOT = pathlib.Path(__file__).resolve().parent
 FIG = ROOT.parent / "paper" / "figures"
@@ -27,7 +28,7 @@ def days_since_2018(dates):
 
 
 def fit_loglinear(x, y):
-    """Return slope (per year), implied gain per year (multiplicative), R^2."""
+    """Return daily log slope, intercept, annual multiplier, and R^2."""
     slope, intercept = np.polyfit(x, np.log(y), 1)
     pred = slope * x + intercept
     ss_res = np.sum((np.log(y) - pred) ** 2)
@@ -37,7 +38,53 @@ def fit_loglinear(x, y):
     return slope, intercept, per_year, r2
 
 
+def make_architecture_figure():
+    """Draw the auditable path from source data to reported claims."""
+    fig, ax = plt.subplots(figsize=(7.0, 2.8))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    boxes = [
+        (0.02, 0.58, 0.19, 0.25, "Public evidence\nvendor + independent"),
+        (0.28, 0.58, 0.19, 0.25, "Versioned inputs\nCSV / parquet"),
+        (0.54, 0.58, 0.19, 0.25, "Deterministic analyses\ntrends / cost / routing"),
+        (0.80, 0.58, 0.18, 0.25, "Paper outputs\nfigures + exact claims"),
+        (0.28, 0.12, 0.19, 0.25, "Official GSM8K\n+ local Qwen weights"),
+        (0.54, 0.12, 0.19, 0.25, "Seeded decoding\n+ resumable checkpoint"),
+        (0.80, 0.12, 0.18, 0.25, "Complete traces\n+ paired statistics"),
+    ]
+    colors = ["#dbeafe", "#dcfce7", "#fef3c7", "#f3e8ff",
+              "#dcfce7", "#fef3c7", "#f3e8ff"]
+    for (x, y, width, height, label), color in zip(boxes, colors):
+        patch = FancyBboxPatch(
+            (x, y), width, height,
+            boxstyle="round,pad=0.015,rounding_size=0.02",
+            linewidth=1, edgecolor="#334155", facecolor=color,
+        )
+        ax.add_patch(patch)
+        ax.text(x + width / 2, y + height / 2, label, ha="center",
+                va="center", fontsize=8)
+    arrows = [
+        ((0.21, 0.705), (0.28, 0.705)),
+        ((0.47, 0.705), (0.54, 0.705)),
+        ((0.73, 0.705), (0.80, 0.705)),
+        ((0.47, 0.245), (0.54, 0.245)),
+        ((0.73, 0.245), (0.80, 0.245)),
+        ((0.90, 0.37), (0.90, 0.58)),
+    ]
+    for start, end in arrows:
+        ax.annotate("", xy=end, xytext=start,
+                    arrowprops={"arrowstyle": "->", "color": "#475569",
+                                "lw": 1.2})
+    ax.text(0.02, 0.94, "Reproducibility architecture", fontsize=10,
+            fontweight="bold", color="#0f172a")
+    fig.tight_layout()
+    fig.savefig(FIG / "architecture.pdf")
+    plt.close(fig)
+
+
 def main():
+    make_architecture_figure()
     df = pd.read_csv(ROOT / "data" / "models_timeline.csv")
     df["release_date"] = pd.to_datetime(df["release_date"])
 
@@ -69,6 +116,7 @@ def main():
     ax.legend(frameon=False, fontsize=8)
     fig.tight_layout()
     fig.savefig(FIG / "fig_swebench_trend.pdf")
+    fig.savefig(FIG / "results.png", dpi=300)
     plt.close(fig)
 
     # ---- MMLU era (knowledge) ----
@@ -93,7 +141,7 @@ def main():
     plt.close(fig)
 
     # ---- Headline: years for budget tier to match prior flagship ----
-    # GPT-5.6 Luna (2026-07, $0.20/$1.20) vs GPT-5.5 (2026-04, $5/$30)
+    # GPT-5.6 Luna (2026-07, $1/$6) vs GPT-5.5 (2026-04, $5/$30)
     # and vs GPT-5 (2025-08 flagship).
     f = pd.read_csv(ROOT / "data" / "frontier_2026.csv")
     luna = f[f.model == "GPT-5.6 Luna"].iloc[0]
@@ -101,8 +149,9 @@ def main():
     benches = ["AA_Intelligence", "AA_CodingAgent", "SWEbench_Pro",
                "TerminalBench21", "ALE", "DeepSWE", "GDPval_AA"]
     wins = sum(luna[b] >= g55[b] for b in benches)
+    output_ratio = g55.output_price / luna.output_price
     print(f"[Luna vs GPT-5.5] Luna wins/ties on {wins}/{len(benches)} "
-          f"shared benchmarks at 1/25th the output price")
+          f"shared benchmarks at 1/{output_ratio:.0f} the output price")
 
     # derived overall SWE-bench Verified for Luna from Vals difficulty rows
     v = pd.read_csv(ROOT / "data" / "vals_swebench_difficulty.csv")

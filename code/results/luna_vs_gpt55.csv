@@ -8,7 +8,7 @@ AA Coding Agent Index,74.6,76.4,GPT-5.5
 SWE-bench Pro,62.7,59.4,Luna
 DeepSWE v1.1,67.2,67.0,Luna
 Terminal-Bench 2.1,84.7,85.6,GPT-5.5
-HealthBench Professional,55.7,51.8,Luna
+HealthBench Professional,55.7,49.5,Luna
 MMMU Pro (no tools),78.4,81.2,GPT-5.5
 MMMU Pro (tools),79.5,83.2,GPT-5.5
 gdp.pdf,22.7,26.0,GPT-5.5

@@ -8,17 +8,17 @@ verifiable, domain-specific rewards (unit tests for code, proof checkers for
 math, task-completion signals for agents) lets a lab buy capability in a chosen
 vertical. Moonshot's agentic suite results and OpenAI's terminal/agentic lead
 both track heavy RL investment in those task
-families~\cite{tomshardware2026k3,openai2026gpt56}.
+families~\cite{moonshot2026k3,openai2026gpt56}.
 
 \paragraph{2. Architecture as targeting.} Kimi~K3's hybrid linear attention
 (Kimi Delta Attention) and expert-routing changes were chosen for long-context
 agentic efficiency, and the payoff appeared precisely on long-horizon
 benchmarks (BrowseComp 91.2, state of the art at
-release)~\cite{venturebeat2026k3,tomshardware2026k3}.
+release)~\cite{moonshot2026k3}.
 
 \paragraph{3. Inference-time structure.} GPT-5.6's Ultra mode makes
 multi-agent fan-out a first-class feature, buying Terminal-Bench points
-(88.8\%~$\to$~91.9\%) at ${\sim}3\times$ cost~\cite{vellum2026tiers,eesel2026gpt56}.
+(88.8\%~$\to$~91.9\%) at higher cost~\cite{openai2026gpt56}.
 Our self-consistency experiment (Section~\ref{sec:selfcons}) is the same lever
 at toy scale: capability is partly a function of inference-time orchestration.
 
@@ -39,13 +39,13 @@ single-number claims deserve suspicion.
 
 \paragraph{Implication for evaluation.} Score-versus-cost curves, held-out
 transfer suites, and maintainer-grade review are becoming the minimum standard
-of evidence. Vendors already report curves~\cite{valletta2026opus5}; ARC Prize
+of evidence. Vendors already report curves~\cite{anthropic2026opus5}; ARC Prize
 now administers runs independently with published
 traces~\cite{arcprize2026opus5, techtimes2026opus5}; and METR's maintainer
 study is a template for auditing what benchmark passes actually mean.
 
 \paragraph{Implication for buyers.} The economic shape of 2026 --- a budget
-tier at 4\% of flagship cost that matches last quarter's flagship on most
+tier at 20\% of flagship token price that matches last quarter's flagship on most
 professional work, plus a fragmented frontier --- means the unit of procurement
 is no longer ``a model'' but a routing policy with per-task effort settings.
 The 2023 question ``which model is best?'' has been replaced by ``which
@@ -60,6 +60,7 @@ trend fit pools vendor and independent numbers and spans only 22 months; the
 $5.8\times$ figure should be read as an order of magnitude. (iii) The routing
 oracle uses benchmark identities as a proxy for task identity; real routers
 must infer task type from unlabeled traffic. (iv) The self-consistency
-experiment uses a 0.5B model on grade-school math by design --- it
-demonstrates the mechanism cheaply and reproducibly, not the frontier effect
-size. (v) The field moves weekly; figures are current as of August 2026.
+experiment uses a 0.5B model on only 16 grade-school-math items by design;
+its intervals are correspondingly wide, and it demonstrates the measurement
+and logging mechanism cheaply rather than estimating a frontier effect size.
+(v) The field moves weekly; figures are current as of August 10, 2026.

@@ -1,19 +1,20 @@
 \section{Conclusion}\label{sec:conclusion}
 
-Eight years separate BERT's 80.5 GLUE from Opus~5's perfect IMO. The
+Eight years separate BERT's 80.5 GLUE from Opus~5's reported 42/42 on the
+2026 IMO problems. The
 progression was not a smooth exponential on one axis but a sequence of
 paradigm changes --- fine-tuning, few-shot scale, alignment, reasoning, agency
 --- each moving capability onto a new axis and each burning out the previous
 era's benchmarks. Our measurements quantify three 2026 facts. Capability in
 agentic coding is still compounding at roughly six-fold per year. The cost of
-a fixed capability level is falling even faster, to the point where a \$0.20/M
+a fixed capability level is falling even faster, to the point where a \$1/M
 budget tier replicates most of the professionally relevant performance of an
 eleven-week-old flagship. And the frontier has fragmented by task: frontend
 coding, repository coding, agentic terminal work, and novel reasoning each
 have a different leader, which makes routing --- not model selection --- the
-decision that matters. The most robust way to improve a deployed system today
-is often to change nothing about the model and everything about how its
-inference compute is spent.
+decision that matters. A practical way to improve a deployed system today is
+often to leave its weights fixed while measuring better ways to spend its
+inference compute.
 
 \paragraph{Reproducibility.} All datasets (\texttt{code/data/}), analysis
 scripts (\texttt{exp1}--\texttt{exp4}), the live experiment, unit tests

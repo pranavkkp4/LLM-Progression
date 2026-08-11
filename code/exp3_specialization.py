@@ -1,7 +1,7 @@
 """Experiment 3: task specialization of 2026 frontier models.
 
 Builds a model x task-category matrix from public benchmark results,
-computes per-model specialization (spread of within-model z-scores),
+computes per-model specialization (spread of category-relative scores),
 and evaluates a simple oracle router: how much better is
 'pick the right model for each task' than any single model?
 """
@@ -29,12 +29,14 @@ RAW = {
                                      "Claude Fable 5": 80.0, "Kimi K3": None},
     "SWE tasks\n(SWE-bench Verified)": {"GPT-5.6 Sol": 96.2, "Claude Opus 5": 97.0,
                                          "Claude Fable 5": 95.0, "Kimi K3": 93.4},
-    "Frontend\n(Arena Elo, K3=1679 #1)": {"GPT-5.6 Sol": None, "Claude Opus 5": None,
-                                           "Claude Fable 5": None, "Kimi K3": 1679},
+    "Frontend\n(Arena Elo, 2026-08-10)": {"GPT-5.6 Sol": 1623,
+                                           "Claude Opus 5": 1712,
+                                           "Claude Fable 5": 1628,
+                                           "Kimi K3": 1682},
     "Novel reasoning\n(ARC-AGI-3)": {"GPT-5.6 Sol": 7.78, "Claude Opus 5": 30.2,
                                      "Claude Fable 5": 20.0, "Kimi K3": None},
     "Knowledge work\n(GDPval-AA Elo)": {"GPT-5.6 Sol": 1747.8, "Claude Opus 5": None,
-                                        "Claude Fable 5": 1759.6, "Kimi K3": 1687.0},
+                                        "Claude Fable 5": 1759.6, "Kimi K3": 1686.0},
 }
 
 # OpenAI's GPT-5.6 launch table: every benchmark reported for BOTH
@@ -50,7 +52,7 @@ LUNA_VS_55 = {
     "SWE-bench Pro": (62.7, 59.4, True),
     "DeepSWE v1.1": (67.2, 67.0, True),
     "Terminal-Bench 2.1": (84.7, 85.6, True),
-    "HealthBench Professional": (55.7, 51.8, True),
+    "HealthBench Professional": (55.7, 49.5, True),
     "MMMU Pro (no tools)": (78.4, 81.2, True),
     "MMMU Pro (tools)": (79.5, 83.2, True),
     "gdp.pdf": (22.7, 26.0, True),
@@ -94,6 +96,7 @@ def main():
     fig.colorbar(im, ax=ax, shrink=0.8)
     fig.tight_layout()
     fig.savefig(FIG / "fig_specialization.pdf")
+    fig.savefig(FIG / "robustness.pdf")
     plt.close(fig)
 
     # specialization spread: std of a model's normalized scores
@@ -137,11 +140,15 @@ def main():
         for m, v in single_means.items():
             fh.write(f"single:{m}={v:.2f}\n")
 
-    # a *cheap* router: pick per benchmark the cheapest tier that is within
-    # 1 point of the best (prices: blended at 5:1 input:output ratio)
-    price = {"GPT-5.6 Sol": 5 + 30 * 5, "GPT-5.6 Terra": 2 + 12 * 5,
-             "GPT-5.6 Luna": 0.2 + 1.2 * 5, "GPT-5.5": 5 + 30 * 5,
-             "Claude Fable 5": 10 + 50 * 5, "Claude Opus 4.8": 5 + 25 * 5}
+    # A *cheap* router: pick per benchmark the cheapest tier within one
+    # normalized point of the best. Cost assumes five input tokens per output
+    # token and uses official standard API rates as of 2026-08-10.
+    price = {"GPT-5.6 Sol": 5 * 5 + 30,
+             "GPT-5.6 Terra": 2.5 * 5 + 15,
+             "GPT-5.6 Luna": 1 * 5 + 6,
+             "GPT-5.5": 5 * 5 + 30,
+             "Claude Fable 5": 10 * 5 + 50,
+             "Claude Opus 4.8": 5 * 5 + 25}
     cheap_score, cheap_cost, oracle_cost = 0.0, 0.0, 0.0
     for b in nmat.index:
         row = nmat.loc[b]

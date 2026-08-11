@@ -2,22 +2,14 @@
 
 \subsection{Capability growth: three benchmark eras}\label{sec:capability}
 
-\paragraph{Knowledge benchmarks saturated.} Figure~\ref{fig:mmlu} shows the
-MMLU series: 43.9\% (GPT-3, 2020) to 86.4\% (GPT-4, 2023) to 91.8\% (o1, late
+\paragraph{Knowledge benchmarks saturated.} The MMLU series rose from 43.9\%
+(GPT-3, 2020) to 86.4\% (GPT-4, 2023) to 91.8\% (o1, late
 2024), past the 89.8\% estimated human-expert level. By 2024 the benchmark had
 lost discriminative power: four strong models clustered within 4
 points~\cite{wang2024mmlupro}, and benchmark mirrors now mark MMLU as
 ``saturated'' and exclude it from scoring~\cite{benchlm_mmlu}. The field
 responded with harder knowledge tests (MMLU-Pro~\cite{wang2024mmlupro},
 Humanity's Last Exam) and, increasingly, with agentic tasks.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/fig_mmlu.pdf}
-\caption{MMLU scores, 2020--2025, against the estimated human-expert level.
-The benchmark that defined the GPT-4 era is now saturated and display-only on
-major leaderboards~\cite{benchlm_mmlu}.}\label{fig:mmlu}
-\end{figure}
 
 \paragraph{Agentic coding became the frontier metric --- and moved fast.}
 Figure~\ref{fig:swe} shows SWE-bench Verified from October 2024 to July 2026.
@@ -28,12 +20,12 @@ by almost six each year. Independent evaluation puts the current frontier at
 96--97\%~\cite{vals2026swebench}, implying the benchmark itself will saturate
 within roughly a year --- the same lifecycle GLUE and MMLU went through, on a
 harder task. Harder variants (SWE-bench Pro, Frontier-Bench, on which even the
-best model scores only 43--64\%~\cite{valletta2026opus5,openai2026gpt56}) are
+best model scores only 43--64\%~\cite{anthropic2026opus5,openai2026gpt56}) are
 already taking over.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/fig_swebench_trend.pdf}
+\includegraphics[width=0.9\linewidth]{figures/results.png}
 \caption{SWE-bench Verified, October 2024 -- July 2026 (mix of vendor-reported
 and independent harness results; see Table~\ref{tab:timeline}). The log-linear
 fit on solve odds implies ${\sim}5.8\times$ growth per year.}\label{fig:swe}
@@ -46,24 +38,16 @@ burning out --- a theme that returns in Section~\ref{sec:discussion}.
 
 \subsection{The collapse of the capability--cost curve}\label{sec:cost}
 
-Figure~\ref{fig:price} shows API input prices from GPT-3's \$60 per million
-tokens (2020) to GPT-5.6 Luna's \$0.20 (2026): a ${\sim}300\times$ decline,
-compounding at roughly $2.5\times$ per year, \emph{while} capability itself
+API input prices fell from GPT-3's \$60 per million tokens (2020) to GPT-5.6
+Luna's \$1 (2026): a ${\sim}60\times$ decline,
+compounding at roughly $2\times$ per year, \emph{while} capability itself
 was compounding at a similar rate. The two effects multiply: a dollar buys
 orders of magnitude more capability than a dollar in 2023.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/fig_price_decline.pdf}
-\caption{API input price per million tokens, 2020--2026 (log scale). Frontier
-capability that cost \$60/M in 2020 terms is now undercut by budget tiers at
-\$0.20/M~\cite{deploybase2026prices,eesel2026gpt56}.}\label{fig:price}
-\end{figure}
-
 \paragraph{Budget tier vs.\ last quarter's flagship.} The sharpest illustration
 is internal to OpenAI's own July 2026 launch table~\cite{openai2026gpt56}.
-GPT-5.6 Luna (\$0.20/\$1.20 per M tokens after the July 30 price
-cut~\cite{eesel2026gpt56}) against GPT-5.5 (\$5/\$30), the flagship released
+GPT-5.6 Luna (\$1/\$6 per M input/output tokens at the official standard API
+rate~\cite{openai2026gpt56}) against GPT-5.5 (\$5/\$30), the flagship released
 eleven weeks earlier: across the 23 benchmarks reported for both, Luna wins 9
 and loses 14 --- but the wins concentrate exactly where the economic value is.
 On agentic and professional work (Agents' Last Exam, GDPval-AA, SWE-bench Pro,
@@ -74,26 +58,15 @@ recall (41.3\% vs.\ 81.5\% on MRCR). Against the flagship of \emph{one year}
 ago the comparison is not close: our reconstruction of overall SWE-bench
 Verified from Vals AI's per-difficulty rows gives Luna 92.9\% vs.\ GPT-5's
 74.9\% vendor-reported score in August
-2025~\cite{vals2026swebench,localaimaster2026gpt55}. Community benchmarkers
-found the same pattern on custom suites: Luna's medium effort setting edged out
-GPT-5-high at roughly $1/35$ the cost per task~\cite{hn2026gpt56}. The
-practical conclusion: \textbf{capability that was flagship-class 2--12 months
-ago is now available at ${\sim}4\%$ of the flagship price}, with the caveat
+2025~\cite{vals2026swebench,localaimaster2026gpt55}. The practical conclusion:
+\textbf{capability that was flagship-class 2--12 months
+ago is now available at ${\sim}20\%$ of the flagship token price}, with the caveat
 that the
 cheapest tier gives up long-context recall and the hardest academic reasoning.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/fig_effort_frontier.pdf}
-\caption{Cost per Artificial Analysis Intelligence-Index task vs.\ score for
-all fifteen GPT-5.6 model$\times$effort settings (log x-axis). Dashed: Pareto
-frontier. Terra is fully dominated; Luna-max delivers 86\% of Sol-max's score
-at 20\% of its task cost~\cite{gist2026aa56,aa2026gpt56}.}\label{fig:frontier}
-\end{figure}
-
 \paragraph{The mid tier is dead.} Our Pareto analysis of the fifteen
-GPT-5.6 settings (Figure~\ref{fig:frontier}) reproduces and confirms a striking
-community finding~\cite{gist2026aa56}: every Terra configuration is dominated
+GPT-5.6 settings reproduces and confirms Artificial Analysis's
+finding~\cite{gist2026aa56,aa2026gpt56}: every Terra configuration is dominated
 --- there is always a Luna or Sol setting that is smarter at no extra cost or
 equally smart and cheaper. Six of fifteen settings lie off the frontier. The
 economic structure of a model family is now bimodal: a volume tier and a
@@ -105,31 +78,32 @@ No single model leads the 2026 frontier; leadership is task-dependent
 (Figure~\ref{fig:heatmap}):
 
 \begin{itemize}
-    \item \textbf{Frontend and design-oriented coding: Kimi K3.} The
-    open-weight K3 took \#1 on arena.ai's Frontend Code Arena with 1,679 Elo in
-    blind developer preference testing --- first in six of seven domains, ahead
-    of Claude Fable~5 and GPT-5.6 Sol, a 17-place jump from Kimi
-    K2.6~\cite{venturebeat2026k3,tomshardware2026k3}.
+    \item \textbf{Frontend and design-oriented coding: Claude Opus 5.} On the
+    live arena.ai WebDev leaderboard checked August 10, Opus~5 led blind
+    developer preference at 1,712 Elo, with open-weight Kimi K3 second at
+    1,682; both values were preliminary and will move as votes
+    accumulate~\cite{arena2026webdev}.
     \item \textbf{Repository-level coding: Claude Fable 5.} Fable~5 leads
     SWE-bench Pro at 80.0\%, 15.4 points ahead of GPT-5.6 Sol
-    (64.6\%)~\cite{openai2026gpt56,vellum2026tiers}.
+    (64.6\%)~\cite{openai2026gpt56}.
     \item \textbf{Agentic terminal and long-horizon professional work:
     GPT-5.6 Sol.} Sol leads the Artificial Analysis Coding Agent Index (80),
     Terminal-Bench 2.1 (88.8\%; 91.9\% in multi-agent Ultra mode), and Agents'
     Last Exam (52.7\%, +12.2 over the best non-OpenAI
-    model)~\cite{aa2026gpt56,openai2026gpt56,vellum2026tiers}.
+    model)~\cite{aa2026gpt56,openai2026gpt56}.
     \item \textbf{Novel reasoning and computer use: Claude Opus 5.} Opus~5
     scored 30.2\% on ARC-AGI-3 --- nearly $4\times$ the previous record of
-    7.8\% (GPT-5.6 Sol) --- plus a perfect 42/42 on IMO 2026 and the lead on
-    OSWorld~2.0 computer use~\cite{decoder2026opus5,arcprize2026opus5,benchlm_opus5}.
+    7.8\% (GPT-5.6 Sol) --- plus a vendor-reported 42/42 on IMO 2026 under
+    Anthropic's grading protocol and the lead on
+    OSWorld~2.0 computer use~\cite{anthropic2026opus5,anthropic2026opus5card,arcprize2026opus5}.
     \item \textbf{Best-value agentic work: Claude Opus 5 again,} reaching
     within 0.5\% of Fable~5's CursorBench peak at half the task
-    cost~\cite{coursiv2026opus5,valletta2026opus5}.
+    cost~\cite{anthropic2026opus5}.
 \end{itemize}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/fig_specialization.pdf}
+\includegraphics[width=0.95\linewidth]{figures/robustness.pdf}
 \caption{Capability as a percentage of the category best, July--August 2026.
 No column is uniformly dark: each frontier model has at least one category
 where another model clearly leads. Cells marked n/a lack a comparable public
@@ -145,7 +119,7 @@ router with only \emph{two} models --- GPT-5.6 Sol and Claude Fable~5 ---
 already captures 100\% of the oracle gain on this suite, because their
 strengths are complementary (agentic vs.\ repo-level/math work). A
 cost-constrained router that picks the cheapest model within one point of the
-best matches the oracle score at 96\% of its cost --- the savings are modest
+best matches the oracle score at 95\% of its cost --- the savings are modest
 precisely because Sol's wins are usually by wide margins
 (Section~\ref{sec:improvements} discusses implications).
 
@@ -153,11 +127,11 @@ precisely because Sol's wins are usually by wide margins
 accidental. Moonshot optimized K3 for agentic coding with a 2.5$\times$
 scaling-efficiency gain from architectural changes (Kimi Delta Attention,
 Attention Residuals) and a training pipeline openly aimed at the agentic
-benchmark suite~\cite{tomshardware2026k3}; its 1M-token single-agent setup was
+benchmark suite~\cite{moonshot2026k3}; its 1M-token single-agent setup was
 deliberately tuned for long-horizon tasks like
-BrowseComp~\cite{venturebeat2026k3}. OpenAI trained GPT-5.6 for terminal and
+BrowseComp~\cite{moonshot2026k3}. OpenAI trained GPT-5.6 for terminal and
 multi-agent workflows (Ultra mode natively fans out
-subagents)~\cite{eesel2026gpt56}. And the cautionary case: Opus~5's record
+subagents)~\cite{openai2026gpt56}. And the cautionary case: Opus~5's record
 ARC-AGI-3 gain partially failed to transfer to Witness, an independent
 held-out puzzle benchmark (43.4, statistically tied with K3 and Fable~5),
 consistent with training on genre-adjacent data~\cite{decoder2026opus5,techtimes2026opus5}.

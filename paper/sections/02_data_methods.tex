@@ -1,7 +1,8 @@
 \section{Data and methods}\label{sec:methods}
 
 \subsection{Data}
-We assembled three datasets, all shipped with this paper's code.
+We assembled three analysis tables plus one evaluation split, all shipped with
+this paper's code.
 
 \paragraph{D1: Timeline.} Twenty-seven (model, benchmark, score, date, source)
 rows spanning 2018--2026, drawn from the original papers and from leaderboard
@@ -13,28 +14,41 @@ Where multiple evaluation variants exist we record the variant explicitly
 for the July 2026 frontier --- GPT-5.6 Sol/Terra/Luna, Claude Fable~5, Claude
 Opus~5, Kimi~K3, plus the April 2026 flagship GPT-5.5 and Claude Opus~4.8 ---
 from OpenAI's GPT-5.6 launch tables~\cite{openai2026gpt56}, Anthropic's Opus~5
-launch and system card coverage~\cite{coursiv2026opus5,mindstudio2026opus5},
+launch and system card~\cite{anthropic2026opus5,anthropic2026opus5card},
 Artificial Analysis~\cite{aa2026gpt56,gist2026aa56}, the Vals AI independent
 SWE-bench Verified harness~\cite{vals2026swebench}, and arena.ai's
-human-preference Frontend Code Arena~\cite{venturebeat2026k3,tomshardware2026k3}.
+human-preference Frontend Code Arena~\cite{arena2026webdev}.
 
 \paragraph{D3: Pricing.} Input/output prices per million tokens for
-representative API models from 2020 to 2026~\cite{deploybase2026prices,eesel2026gpt56}.
+representative API models from 2020 to 2026, using vendor documentation where
+available~\cite{deploybase2026prices,openai2026gpt56}.
+
+\paragraph{D4: Live-evaluation items.} The committed official GSM8K test split
+contains 1,319 question/answer pairs~\cite{cobbe2021gsm8k}; the live
+pilot uses a fixed 16-item sample and records the original row identifiers.
 
 \paragraph{Provenance caveat.} Mid-2026 numbers mix vendor-reported and
 independent evaluations. We label provenance wherever it matters and prefer
 third-party measurements (Vals AI, Artificial Analysis, ARC Prize) when both
-exist. Vendor launch numbers are claims, not results; we treat them as such and
-note where the two disagree~\cite{eesel2026gpt56,vellum2026tiers}.
+exist. Vendor launch numbers are claims, not independent results; we treat them
+as such and note where vendor and third-party harnesses differ.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/architecture.pdf}
+\caption{Reproducibility architecture. Public evidence and versioned inputs
+feed deterministic analyses; the live experiment separately records complete
+per-problem generations and paired statistics before either path reaches the
+paper.}\label{fig:architecture}
+\end{figure}
 
 \subsection{Analysis methods}
 \paragraph{Trend fitting.} For the SWE-bench Verified series we fit a
 log-linear model to the \emph{odds} of solving a task,
 $\mathrm{logit}(p)$, against release date, and report the implied annual
 multiplicative growth of those odds with the fit $R^2$
-(Figure~\ref{fig:swe}). For MMLU we plot the raw series against the estimated
-human-expert level of 89.8\%~\cite{hendrycks2021mmlu}
-(Figure~\ref{fig:mmlu}).
+(Figure~\ref{fig:swe}). For MMLU we compare the raw series with the estimated
+human-expert level of 89.8\%~\cite{hendrycks2021mmlu}.
 
 \paragraph{Pareto analysis.} Using Artificial Analysis's all-effort dataset for
 the GPT-5.6 family (15 model$\times$effort settings with intelligence-index
@@ -49,6 +63,11 @@ benchmark, and (iii) restricted routers (a cheapest-within-one-point router
 and a two-model router).
 
 \paragraph{Live experiment.} Section~\ref{sec:selfcons} describes a controlled
-inference-time experiment on Qwen2.5-0.5B-Instruct: greedy decoding versus
-self-consistency with $k$ sampled chains and majority voting, on grade-school
-math word problems, with all code, seeds, and unit tests provided.
+inference-time pilot on Qwen2.5-0.5B-Instruct. We select 16 items from the
+official 1,319-item GSM8K test split with data seed 42 and compare deterministic
+greedy decoding with eight sampled chains (inference seed 1234, temperature
+0.8, top-$p$ 0.95, 192 generated tokens) followed by majority voting. Numeric
+answers are canonicalized before voting. We report exact counts, Wilson 95\%
+intervals for each accuracy, and a two-sided exact McNemar test for the paired
+greedy-versus-vote outcomes. Complete generations, extracted answers, seeds,
+settings, resumable checkpoints, and integrity tests are provided.

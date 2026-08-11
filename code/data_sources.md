@@ -18,15 +18,21 @@ All web sources retrieved August 6–10, 2026.
   localaimaster.com/models/gpt-5-5), 2026-05
 
 ## frontier_2026.csv
-- OpenAI models + shared comparison columns: OpenAI GPT-5.6 launch tables
-  (openai.com/index/gpt-5-6), retrieved 2026-08
+- OpenAI models, shared comparison columns, and standard API prices:
+  OpenAI GPT-5.6 launch tables (openai.com/index/gpt-5-6) and official API
+  pricing/model documentation, re-verified 2026-08-10
 - Vals AI SWE-bench Verified (independent): vals.ai/benchmarks/swebench
-- Kimi K3 (GDPval 1687, Frontend Arena 1679, BrowseComp 91.2, prices):
-  VentureBeat 2026-07-16; Tom's Hardware 2026-07-17
+- Kimi K3 architecture, BrowseComp 91.2, and selected benchmark values:
+  Moonshot AI's official Kimi K3 repository and technical report
+- Frontend Arena Elo as of 2026-08-10 (Opus 5 1712, Kimi K3 1682,
+  Fable 5 1628, Sol 1623): arena.ai live WebDev leaderboard; scores are
+  preliminary and will move as votes accumulate
 - Claude Opus 5 (SWE-bench 97.0, ARC-AGI-3 30.2, IMO 42/42, prices):
   Vals AI; ARC Prize (arcprize.org/results/anthropic-claude-opus-5);
-  Anthropic launch coverage (coursiv.io, mindstudio.ai), 2026-07-24/25
-- Luna prices are post-2026-07-30 cut (eesel.ai/blog/gpt-5-6-review)
+  Anthropic launch post and system card, 2026-07-24
+- GPT-5.6 standard API prices are $5/$30 (Sol), $2.50/$15 (Terra), and
+  $1/$6 (Luna) per million input/output tokens; official OpenAI pricing,
+  re-verified 2026-08-10
 
 ## price_history.csv
 - 2020–2025 rows: deploybase.ai pricing history (2026-03-04)

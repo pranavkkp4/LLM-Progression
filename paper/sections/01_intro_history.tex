@@ -4,10 +4,10 @@ In October 2018, Google released BERT, a bidirectional Transformer encoder that
 set the state of the art on eleven natural-language understanding tasks and
 pushed the GLUE benchmark to 80.5\%~\cite{devlin2019bert}. BERT could not write
 a coherent paragraph; it was a \emph{reading} model, fine-tuned per task. In
-July 2026, Anthropic released Claude Opus~5, which scored a perfect 42/42 on
-the 2026 International Mathematical Olympiad without tools and quadrupled the
-world record on ARC-AGI-3, a benchmark explicitly designed to measure reasoning
-about novel problems~\cite{decoder2026opus5,arcprize2026opus5}. Between those
+July 2026, Anthropic released Claude Opus~5 and reported 42/42 under its
+post-contest, no-tools grading protocol for the 2026 International Mathematical
+Olympiad problems; ARC Prize independently measured a roughly fourfold jump on
+ARC-AGI-3~\cite{anthropic2026opus5card,arcprize2026opus5}. Between those
 two releases sit eight years in which the field's dominant paradigm changed at
 least four times: from task-specific fine-tuning, to few-shot prompting of
 large pretrained decoders, to instruction tuning and human-feedback alignment,
@@ -31,16 +31,16 @@ effort, and routing tasks across models.
     \item Trend fits showing ${\sim}5.8\times$ annual growth in the odds of
     solving SWE-bench Verified tasks, alongside the saturation of
     knowledge benchmarks such as MMLU (Section~\ref{sec:capability}).
-    \item A cost analysis showing a ${\sim}300\times$ decline in input-token
+    \item A cost analysis showing a ${\sim}60\times$ decline in input-token
     prices from GPT-3 (2020) to GPT-5.6 Luna (2026), and a demonstration that
     today's budget tier matches the flagship of one quarter ago on most
     agentic/professional benchmarks (Section~\ref{sec:cost}).
     \item Evidence that the 2026 frontier is task-fragmented, and that simple
     model routing recovers the per-task optimum
     (Section~\ref{sec:specialization}).
-    \item A live, reproducible experiment showing self-consistency sampling
-    materially improves a small open model's math accuracy over greedy
-    decoding, plus analyses of reasoning-effort calibration
+    \item A live, reproducible 16-item pilot measuring self-consistency
+    sampling against greedy decoding for a small open model, with complete
+    traces and paired uncertainty, plus analyses of reasoning-effort calibration
     (Section~\ref{sec:improvements}).
 \end{enumerate}
 
@@ -89,13 +89,13 @@ independent harnesses~\cite{vals2026swebench}. By mid-2026 the flagship
 releases --- Claude Fable~5 (July 1), GPT-5.6 Sol/Terra/Luna (July 9), Kimi~K3
 (July 16), Claude Opus~5 (July 24) --- were evaluated primarily on agentic,
 long-horizon, and economically-weighted tasks rather than static question
-answering~\cite{openai2026gpt56,morphllm2026coding,tomshardware2026k3,coursiv2026opus5}.
+answering~\cite{anthropic2026fable5,openai2026gpt56,moonshot2026k3,anthropic2026opus5}.
 Kimi~K3 additionally marked the near-closure of the open--closed gap: a
 2.8-trillion-parameter open-weight mixture-of-experts model competitive with
-the best proprietary systems~\cite{venturebeat2026k3,tomshardware2026k3}.
+the best proprietary systems~\cite{moonshot2026k3}.
 
-Table~\ref{tab:timeline} summarizes the arc; Figure~\ref{fig:mmlu} and
-Figure~\ref{fig:swe} show the two benchmark series that bookend it.
+Table~\ref{tab:timeline} summarizes the arc, and Figure~\ref{fig:swe} shows
+the agentic benchmark series at its current endpoint.
 
 \begin{table}[t]
 \centering

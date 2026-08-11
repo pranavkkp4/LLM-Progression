@@ -8,5 +8,5 @@ single:GPT-5.5=87.11
 single:GPT-5.6 Luna=86.29
 single:Claude Opus 4.8=85.50
 cheap_router_score=99.95
-cheap_router_cost_share=96.1
+cheap_router_cost_share=95.5
 two_model_router=100.00

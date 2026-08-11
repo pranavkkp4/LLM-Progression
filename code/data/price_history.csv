@@ -8,8 +8,8 @@ GPT-4o (reduced),2024-08-06,2.50,10.00,Price cut
 GPT-5,2025-08-07,1.25,10.00,Frontier at prior budget-tier prices
 GPT-5.5,2026-04-23,5.00,30.00,Flagship tier
 GPT-5.6 Sol,2026-07-09,5.00,30.00,Flagship tier
-GPT-5.6 Terra,2026-07-30,2.00,12.00,Post-cut mid tier
-GPT-5.6 Luna,2026-07-30,0.20,1.20,Post-cut volume tier (80% cut on 2026-07-30)
+GPT-5.6 Terra,2026-07-09,2.50,15.00,Official standard API price at launch
+GPT-5.6 Luna,2026-07-09,1.00,6.00,Official standard API price at launch
 Claude Opus 5,2026-07-24,5.00,25.00,Unchanged from Opus 4.8
 Claude Fable 5,2026-07-01,10.00,50.00,Ultra-premium tier
 Kimi K3,2026-07-16,3.00,15.00,Open weights; $0.30/M cache-hit input

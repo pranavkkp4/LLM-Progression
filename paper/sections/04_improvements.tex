@@ -11,41 +11,33 @@ independent chain-of-thought solutions and majority-voting them
 accurate system from the \emph{same} model.
 
 \paragraph{Experiment.} We evaluate Qwen2.5-0.5B-Instruct --- a half-billion
-parameter model that runs on a laptop CPU --- on math word problems (GSM8K
-test items when downloadable; otherwise a deterministic synthetic set with
-programmatically verified answers; the script tries both). Two conditions:
+parameter model that runs on a laptop CPU --- on a fixed seeded sample from
+the committed official GSM8K test set. The paper run fails rather than silently
+substituting synthetic data. Two conditions:
 greedy decoding, and self-consistency with $k$ samples at temperature 0.8,
 voted. We also report the vote at $k \in \{1, 2, 4\}$ to trace the
 compute--accuracy curve.
 
-\paragraph{Result.} On 16 GSM8K problems with Qwen2.5-0.5B-Instruct, greedy
-decoding achieved 6.2\% accuracy, while sampling and voting reached 37.5\%
---- an absolute gain of 31.2 percentage points from inference-time strategy
-alone (Table~\ref{tab:selfcons}, Figure~\ref{fig:selfcons}). Three features of
-the raw traces are as informative as the headline number. First, the gain
-appears already at $k=1$: the dominant effect is escaping \emph{greedy
-derailment}, where the model imitates the brevity of the few-shot prompt and
-commits to a wrong setup (e.g., computing the correct intermediate quantity
-and then reasoning past it to a wrong final answer); the vote curve
-$k \in \{2,4,8\}$ is flat on this small problem set, and the aggregation
-component grows with model scale and problem difficulty in the original
-study~\cite{wang2022selfconsistency}. Second, incorrect chains are nearly
-twice as long as correct ones (68 vs.\ 37 words on average): the model
-\emph{overthinks} --- the same failure mode behind the effort-calibration
-finding of Section~\ref{sec:effort}, observed here at 0.5B scale. Third, the
-correct answer appeared among the eight samples on 8 of the 11 fully-logged
-problems: the capability is latent in the weights, and the decoding strategy
-determines whether it surfaces. All raw generations are released with the
+\paragraph{Result.} \input{../code/results/self_consistency_sentence.tex}
+The complete trace contains one auditable record for each paired item,
+including the greedy generation, all eight sampled generations, extracted
+answers, and prefix votes. Because this is a small pilot, its Wilson intervals
+are wide and the paired test should be read as uncertainty rather than a
+binary success threshold; the run demonstrates a reproducible mechanism and
+logging method, not a precise population effect. The aggregation component is
+expected to grow with model scale and problem difficulty in the original
+study~\cite{wang2022selfconsistency}. All raw generations are released with the
 code (\url{results/exp4_raw_generations.jsonl}). This is the small-scale
 shadow of the frontier pattern, where multi-sample and multi-agent inference
 (Sol Ultra's 91.9\% vs.\ 88.8\% single-agent on
-Terminal-Bench~\cite{vellum2026tiers}) buys points that no single pass can.
+Terminal-Bench~\cite{openai2026gpt56}) buys points that no single pass can.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.75\linewidth]{figures/fig_self_consistency.pdf}
-\caption{Accuracy of Qwen2.5-0.5B-Instruct on math word problems as a function
+\includegraphics[width=0.75\linewidth]{figures/calibration.png}
+\caption{Accuracy of Qwen2.5-0.5B-Instruct on GSM8K as a function
 of sampled chains $k$ (majority vote), versus the greedy baseline (dashed).
+Error bars and the gray band are Wilson 95\% intervals.
 Data and code: \url{code/exp4_self_consistency.py}.}\label{fig:selfcons}
 \end{figure}
 
@@ -65,12 +57,12 @@ Data and code: \url{code/exp4_self_consistency.py}.}\label{fig:selfcons}
 score-vs-cost curves show Opus~5's Frontier-Bench score peaks at
 \emph{xhigh} effort (44.4\%) and \emph{drops} at max (43.3\%) while costing
 more; community re-analysis of Anthropic's Frontier-code chart found the peak
-at medium effort (${\sim}53\%$)~\cite{valletta2026opus5,mindstudio2026opus5}.
-Second, our Pareto analysis (Figure~\ref{fig:frontier}) shows each
+at medium effort (${\sim}53\%$)~\cite{anthropic2026opus5}.
+Second, our Pareto analysis shows each
 ${\sim}4$-point intelligence gain from Luna-max to Terra-max to Sol-max
 multiplies per-task cost by $2.6\times$ and $1.9\times$
-respectively~\cite{gist2026aa56}. The mechanism is overthinking: on tasks with
-a direct solution path, longer chains wander~\cite{mindstudio2026opus5}.
+respectively~\cite{gist2026aa56}. A plausible mechanism is overthinking: on
+tasks with a direct solution path, longer chains can wander.
 \textbf{Recommendation:} treat effort as a per-workload hyperparameter with a
 measured optimum, not a quality dial to max out.
 
@@ -95,11 +87,11 @@ cost.
 \subsection{What we would tell the labs}\label{sec:labs}
 The same analyses generate suggestions for model builders: (i) report
 score-vs-cost curves for every benchmark, as Anthropic now does --- single
-numbers invite cherry-picking~\cite{valletta2026opus5}; (ii) close the
+numbers invite cherry-picking~\cite{anthropic2026opus5}; (ii) close the
 budget-tier long-context cliff (Luna's 41.3\% MRCR vs.\ Sol's
-91.5\%~\cite{vellum2026tiers}), the one place the cheap model is not
+91.5\%~\cite{openai2026gpt56}), the one place the cheap model is not
 near-flagship; (iii) publish held-out transfer evaluations alongside targeted
 benchmarks (the ARC-AGI-3/Witness gap in Section~\ref{sec:specialization});
 and (iv) invest in mid-context retrieval rather than context length alone ---
 K3's BrowseComp result suggests retrieval quality, not window size, is the
-binding constraint~\cite{venturebeat2026k3}.
+binding constraint~\cite{moonshot2026k3}.
